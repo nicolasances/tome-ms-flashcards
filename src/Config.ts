@@ -7,9 +7,9 @@ import { ValidatorProps } from "toto-api-controller/dist/model/ValidatorProps";
 
 const secretManagerClient = new SecretManagerServiceClient();
 
-const dbName = 'mydb';
+const dbName = 'tomefc';
 const collections = {
-    coll1: 'coll1',
+    cards: 'cards',
 };
 
 export class ControllerConfig implements TotoControllerConfig {
@@ -37,17 +37,17 @@ export class ControllerConfig implements TotoControllerConfig {
 
         }));
 
-        // promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/REPLACE-mongo-user/versions/latest` }).then(([version]) => {
+        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/tome-ms-flashcards-mongo-user/versions/latest` }).then(([version]) => {
 
-        //     this.mongoUser = version.payload!.data!.toString();
+            this.mongoUser = version.payload!.data!.toString();
 
-        // }));
+        }));
 
-        // promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/REPLACE-mongo-pswd/versions/latest` }).then(([version]) => {
+        promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/tome-ms-flashcards-mongo-pswd/versions/latest` }).then(([version]) => {
 
-        //     this.mongoPwd = version.payload!.data!.toString();
+            this.mongoPwd = version.payload!.data!.toString();
 
-        // }));
+        }));
 
         promises.push(secretManagerClient.accessSecretVersion({ name: `projects/${process.env.GCP_PID}/secrets/toto-auth-endpoint/versions/latest` }).then(([version]) => {
 
@@ -70,9 +70,15 @@ export class ControllerConfig implements TotoControllerConfig {
         }
     }
 
+    getAPIsEndpoints() {
+        return {
+            "toto-ms-llm": "https://toto-ms-llm-6lv62poq7a-ew.a.run.app"
+        }
+    }
+
     async getMongoClient() {
 
-        const mongoUrl = `mongodb://${this.mongoUser}:${this.mongoPwd}@${this.mongoHost}:27017`
+        const mongoUrl = `mongodb://${this.mongoUser}:${this.mongoPwd}@${this.mongoHost}:27017/tomefc`
 
         return await new MongoClient(mongoUrl).connect();
     }
