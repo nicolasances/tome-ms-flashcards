@@ -72,7 +72,7 @@ export class ControllerConfig implements TotoControllerConfig {
 
     getAPIsEndpoints() {
         return {
-            "toto-ms-llm": "https://toto-ms-llm-6lv62poq7a-ew.a.run.app"
+            "toto-ms-llm": process.env['LLM_API_ENDPOINT']
         }
     }
 
