@@ -13,6 +13,7 @@ export class MultipleOptionsFC implements Card {
 
     id?: string
     user: string
+    topicId: string
     topicCode: string;
     question: string;
     options: string[];
@@ -20,12 +21,14 @@ export class MultipleOptionsFC implements Card {
 
     constructor(
         user: string,
+        topicId: string,
         topicCode: string,
         question: string,
         options: string[],
         rightAnswerIndex: number
     ) {
         this.user = user;
+        this.topicId = topicId;
         this.topicCode = topicCode;
         this.question = question;
         this.options = options;
@@ -33,7 +36,7 @@ export class MultipleOptionsFC implements Card {
     }
 
     toBSON() {
-        return { user: this.user, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex }
+        return { user: this.user, topicId: this.topicId, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex }
     }
 
     static fromRequest(req: Request, user: string): MultipleOptionsFC {
@@ -42,17 +45,18 @@ export class MultipleOptionsFC implements Card {
 
         // Validate mandatory fields
         if (!body.topicCode) throw new ValidationError(400, "No topic code provided"); 
+        if (!body.topicId) throw new ValidationError(400, "No topic id provided"); 
         if (!body.question) throw new ValidationError(400, "No question provided"); 
         if (!body.options || body.options.length < 2) throw new ValidationError(400, "No (or not enough) options provided"); 
         if (!body.rightAnswerIndex) throw new ValidationError(400, "No right answer provided"); 
 
-        return new MultipleOptionsFC(user, body.topicCode, body.question, body.options, body.rightAnswerIndex)
+        return new MultipleOptionsFC(user, body.topicId, body.topicCode, body.question, body.options, body.rightAnswerIndex)
 
     }
 
     static fromBSON(bson: WithId<any>): MultipleOptionsFC {
 
-        const card = new MultipleOptionsFC(bson.user, bson.topicCode, bson.question, bson.options, bson.rightAnswerIndex)
+        const card = new MultipleOptionsFC(bson.user, bson.topicId, bson.topicCode, bson.question, bson.options, bson.rightAnswerIndex)
         card.id = bson._id.toHexString()
 
         return card

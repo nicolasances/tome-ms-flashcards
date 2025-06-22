@@ -34,7 +34,7 @@ export class FlashcardsGenerator {
         this.config = execContext.config as ControllerConfig;
     }
 
-    async generateFlashcards(topicCode: string) {
+    async generateFlashcards(topicCode: string, topicId: string) {
 
         this.logger.compute(this.cid, `Generating Flashcards for topic ${topicCode}`)
 
@@ -87,7 +87,7 @@ export class FlashcardsGenerator {
 
                 // 2.3. For each generated flashcard in promisesResult, generate a MultipleOptionsFC 
                 const generatedFlashcards: MultipleOptionsFC[] = llmResponse.value.questions.map(
-                    (flashcard: { question: string; options: string[]; answer: number; }) => new MultipleOptionsFC(this.user, topicCode, flashcard.question, flashcard.options, flashcard.answer)
+                    (flashcard: { question: string; options: string[]; answer: number; }) => new MultipleOptionsFC(this.user, topicId, topicCode, flashcard.question, flashcard.options, flashcard.answer)
                 );
 
                 return generatedFlashcards;

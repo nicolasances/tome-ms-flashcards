@@ -19,12 +19,13 @@ export class OnTopicScraped {
         const cid = msg.cid;
 
         const topicCode = msg.id;
+        const topicId = msg.data.topicId;
         const user = msg.data.user;
 
         logger.compute(cid, `[OnTopicScraped] Generating flashcards for topic ${topicCode} and user ${user}.`)
 
         // Generate flashcards for the event
-        const result = await new FlashcardsGenerator(this.execContext, req, user).generateFlashcards(topicCode)
+        const result = await new FlashcardsGenerator(this.execContext, req, user).generateFlashcards(topicCode, topicId)
 
         if (!result.flashcards || result.flashcards.length == 0) throw new TotoRuntimeError(500, `No flashcards generated for topic ${topicCode}`);
 

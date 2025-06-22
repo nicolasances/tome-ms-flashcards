@@ -23,10 +23,10 @@ export class OnTopicDeleted {
         const logger = this.execContext.logger;
         const cid = msg.cid;
 
-        const topicCode = msg.id;
+        const topicId = msg.id;
         const user = msg.data.user;
 
-        logger.compute(cid, `[OnTopicDeleted] Deleting all flashcards for topic ${topicCode} and user ${user}.`)
+        logger.compute(cid, `[OnTopicDeleted] Deleting all flashcards for topic ${topicId} and user ${user}.`)
         
         // Delete all flashcards for that topic and user
         let client;
@@ -36,9 +36,9 @@ export class OnTopicDeleted {
             client = await this.config.getMongoClient();
             const db = client.db(this.config.getDBName());
             
-            const deletedCount = await new FlashCardsStore(db, this.execContext).deleteAllFlashcards(topicCode, user)
+            const deletedCount = await new FlashCardsStore(db, this.execContext).deleteAllFlashcards(topicId, user)
             
-            logger.compute(cid, `[OnTopicDeleted] Deleted ${deletedCount} flashcards for topic ${topicCode} and user ${user}.`)
+            logger.compute(cid, `[OnTopicDeleted] Deleted ${deletedCount} flashcards for topic ${topicId} and user ${user}.`)
 
         } catch (error) {
 
