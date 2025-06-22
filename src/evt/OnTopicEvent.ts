@@ -8,8 +8,12 @@ import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeErro
 import { FlashcardFactory } from "../cards/Card";
 import { FlashCardsStore } from "../store/FlashCardsStore";
 import { FlashcardsGenerator } from "../cards/FlashcardsGenerator";
+import { OnTopicScraped } from "./handlers/OnTopicScraped";
+import { OnTopicDeleted } from "./handlers/OnTopicDeleted";
 
-
+/**
+ * Reacts to events on topics
+ */
 export class OnTopicEvent implements TotoDelegate {
 
     async do(req: Request, userContext: UserContext, execContext: ExecutionContext): Promise<any> {
@@ -21,23 +25,27 @@ export class OnTopicEvent implements TotoDelegate {
 
         logger.compute(cid, `Received event ${JSON.stringify(msg)}`)
 
-        // Only care about events: 
-        // - topicContentSavedInKB
-        if (msg.type != 'topicScraped') {
-            logger.compute(cid, `Event not to be handled. Skipping`)
-            return { consumed: false }
-        }
+        if (msg.type == EVENTS.topicScraped) return new OnTopicScraped(execContext).do(req);
+        else if (msg.type == EVENTS.topicDeleted) return new OnTopicDeleted(execContext).do(req);
 
-        const topicCode = msg.id;
-        const user = msg.data.user;
+        logger.compute(cid, `Event ${msg.type} is not handled by this service. Ignoring.`);
 
-        // Generate flashcards for the event
-        const result = await new FlashcardsGenerator(execContext, req, user).generateFlashcards(topicCode)
-
-        if (result.flashcards && result.flashcards.length > 0) return { consumed: true }
-
-        throw new TotoRuntimeError(500, `No flashcards generated for topic ${topicCode}`)
+        return { consumed: false };
 
     }
+
+}
+
+
+export const EVENTS = {
+
+    // A topic has been created
+    topicCreated: "topicCreated",
+
+    // A topic has been deleted
+    topicDeleted: "topicDeleted",
+
+    // A topic has been scraped
+    topicScraped: "topicScraped",
 
 }
