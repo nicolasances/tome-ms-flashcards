@@ -1,7 +1,7 @@
 import { Db } from "mongodb";
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
 import { ControllerConfig } from "../Config";
-import { Card } from "../cards/Card";
+import { Card, FlashcardFactory } from "../cards/Card";
 
 export class FlashCardsStore {
 
@@ -56,4 +56,19 @@ export class FlashCardsStore {
         return result.deletedCount;
     }
 
+    /**
+     * Returns the list of cards for the specified topic 
+     * 
+     * @param topicId the topic Id
+     * @returns the list of cards for that topic
+     */
+    async getFlashcards(topicId: string): Promise<Card[]> {
+
+        const cards = await this.db.collection(this.collections.cards).find({ topicId: topicId }).toArray()
+
+        return cards.map(card => FlashcardFactory.newFlashcardFromBson(card))
+
+    }
+
 }
+
