@@ -12,6 +12,7 @@ import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 export class MultipleOptionsFC implements Card {
 
     id?: string
+    type: string = 'options'
     user: string
     topicId: string
     topicCode: string;
@@ -36,7 +37,7 @@ export class MultipleOptionsFC implements Card {
     }
 
     toBSON() {
-        return { user: this.user, topicId: this.topicId, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex }
+        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex }
     }
 
     static fromRequest(req: Request, user: string): MultipleOptionsFC {

@@ -5,7 +5,8 @@ export interface Card {
 
     id?: string
     topicCode: string;
-    user: string
+    type: string;
+    user: string;
 
     toBSON(): any;
 
