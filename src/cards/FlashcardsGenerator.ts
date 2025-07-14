@@ -73,13 +73,13 @@ export class FlashcardsGenerator {
                     - Do not invent facts not supported by the text.
                     - Make sure that the questions cover all names
                     - Questions should test all of the below: 
-                    + important names (of people, organizations, countries), 
-                    + dates, 
-                    + events, 
-                    + numbers, 
-                    + actions (e.g. "what did this person do?"), 
-                    + concepts (e.g. "what did this law consist of?") 
-                    + causes/effects.
+                        + important names (of people, organizations, countries), 
+                        + dates, 
+                        + events, 
+                        + numbers, 
+                        + actions (e.g. "what did this person do?"), 
+                        + concepts (e.g. "what did this law consist of?") 
+                        + causes/effects.
                     - Format each question as a JSON object.
                     - When asking for dates, the options might also contain different decades, not just dates that are too close to each other
                     - Each object must include:  
