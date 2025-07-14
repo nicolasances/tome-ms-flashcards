@@ -96,13 +96,13 @@ export class FlashcardsGenerator {
                     ${fileContent}
                     ----
                     **Output format (JSON array):**
-                    {questions: 
-                        [
-                        {
-                            "question": "QUESTION TEXT HERE",
-                            "options": ["Option A", "Option B", "Option C", "Option D"],
-                            "answer": index of the right answer
-                        },
+                    {   title: "A Generated title that tells what this text is about", 
+                        questions: [
+                            {
+                                "question": "QUESTION TEXT HERE",
+                                "options": ["Option A", "Option B", "Option C", "Option D"],
+                                "answer": index of the right answer
+                            },
                         ...
                         ]
                     }
@@ -118,6 +118,7 @@ export class FlashcardsGenerator {
                     (flashcard: { question: string; options: string[]; answer: number; }) => {
                         
                         const fc = new MultipleOptionsFC(this.user, topicId, topicCode, flashcard.question, flashcard.options, flashcard.answer)
+                        fc.sectionTitle = llmResponse.value.title; // Set the section title from the LLM response
 
                         // Shuffle the options
                         fc.shuffleOptions();

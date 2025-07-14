@@ -20,6 +20,8 @@ export class MultipleOptionsFC implements Card {
     options: string[];
     rightAnswerIndex: number;
 
+    sectionTitle?: string; 
+
     constructor(
         user: string,
         topicId: string,
@@ -37,7 +39,7 @@ export class MultipleOptionsFC implements Card {
     }
 
     toBSON() {
-        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex }
+        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex, sectionTitle: this.sectionTitle }
     }
 
     /**
@@ -83,6 +85,7 @@ export class MultipleOptionsFC implements Card {
 
         const card = new MultipleOptionsFC(bson.user, bson.topicId, bson.topicCode, bson.question, bson.options, bson.rightAnswerIndex)
         card.id = bson._id.toHexString()
+        card.sectionTitle = bson.sectionTitle;
 
         return card
 
