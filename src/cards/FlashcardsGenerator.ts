@@ -115,7 +115,15 @@ export class FlashcardsGenerator {
 
                 // 2.3. For each generated flashcard in promisesResult, generate a MultipleOptionsFC 
                 const generatedFlashcards: MultipleOptionsFC[] = llmResponse.value.questions.map(
-                    (flashcard: { question: string; options: string[]; answer: number; }) => new MultipleOptionsFC(this.user, topicId, topicCode, flashcard.question, flashcard.options, flashcard.answer)
+                    (flashcard: { question: string; options: string[]; answer: number; }) => {
+                        
+                        const fc = new MultipleOptionsFC(this.user, topicId, topicCode, flashcard.question, flashcard.options, flashcard.answer)
+
+                        // Shuffle the options
+                        fc.shuffleOptions();
+
+                        return fc;
+                    }
                 );
 
                 return generatedFlashcards;
