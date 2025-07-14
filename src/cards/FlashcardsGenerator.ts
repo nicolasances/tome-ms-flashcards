@@ -3,7 +3,6 @@ import { Logger } from "toto-api-controller/dist/logger/TotoLogger";
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
 import { LLMAPI } from "../api/LLMAPI";
 import { Request } from "express";
-import { log } from "console";
 import { MultipleOptionsFC } from "./MultipleOptionsFC";
 import { FlashCardsStore } from "../store/FlashCardsStore";
 import { ControllerConfig } from "../Config";
@@ -65,20 +64,47 @@ export class FlashcardsGenerator {
                 this.logger.compute(this.cid, `Prompting LLM to generate section's flashcards for file ${file.name}`)
 
                 const prompt = `
-                    The following are my notes on a book I wrote:\n
+                    You are an assistant that creates multiple-choice quiz cards from a historical or non-fictional text.
+
+                    **Your task:**
+                    From the given text, extract key facts and generate **multiple-choice questions** with **only one correct answer** and **3–4 answer options total** (including distractors).
+
+                    **Instructions:**
+                    - Do not invent facts not supported by the text.
+                    - Make sure that the questions cover all names
+                    - Questions should test all of the below: 
+                    + important names (of people, organizations, countries), 
+                    + dates, 
+                    + events, 
+                    + numbers, 
+                    + actions (e.g. "what did this person do?"), 
+                    + concepts (e.g. "what did this law consist of?") 
+                    + causes/effects.
+                    - Format each question as a JSON object.
+                    - When asking for dates, the options might also contain different decades, not just dates that are too close to each other
+                    - Each object must include:  
+                        - "question": The question string  
+                        - "options": An array of 4 strings  
+                        - "answer": The exact correct index from the options array
+                    - Generally:
+                        - For short texts (~100–200 words), 5+ questions is enough.
+                        - For medium (~500 words), 10+ questions.
+                        - For longer or denser texts, generate up to 15+ questions.
+
+                    **The text**
                     ----
                     ${fileContent}
                     ----
-                    Make a series of questions for this text with different possible answers (only one right) to test my knowledge.
-                    There must be questions on: 
-                     - dates
-                     - names (of people, locations, etc.)
-                     - events (e.g. what happened in date xxx or what happened after this other thing happened?)
-                    The output is an array of questions (field called 'questions') and each question to contain the following fields:
-                    1. question: the question
-                    2. options: the different possible answers, only one of which is true.
-                    3. answer: the index in the array of options of the right answer
-                    Make sure the answer is not always the same index.
+                    **Output format (JSON array):**
+                    [
+                    {
+                        "question": "QUESTION TEXT HERE",
+                        "options": ["Option A", "Option B", "Option C", "Option D"],
+                        "answer": index of the right answer
+                    },
+                    ...
+                    ]
+                    FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
                 `
 
                 const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
