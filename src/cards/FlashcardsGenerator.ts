@@ -96,7 +96,7 @@ export class FlashcardsGenerator {
                     ${fileContent}
                     ----
                     **Output format (JSON array):**
-                    {   title: "A Generated title that tells what this text is about", 
+                    {   title: "A Generated title that tells what this text is about, without spoiling dates", 
                         questions: [
                             {
                                 "question": "QUESTION TEXT HERE",
