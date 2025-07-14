@@ -95,15 +95,6 @@ export class FlashcardsGenerator {
                     ----
                     ${fileContent}
                     ----
-                    **Output format (JSON array):**
-                    [
-                    {
-                        "question": "QUESTION TEXT HERE",
-                        "options": ["Option A", "Option B", "Option C", "Option D"],
-                        "answer": index of the right answer
-                    },
-                    ...
-                    ]
                     FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
                 `
 
