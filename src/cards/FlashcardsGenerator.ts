@@ -89,7 +89,7 @@ export class FlashcardsGenerator {
                     - Generally:
                         - For short texts (~100–200 words), 5+ questions is enough.
                         - For medium (~500 words), 10+ questions.
-                        - For longer or denser texts, generate up to 15+ questions.
+                        - For longer or denser texts, more than 20 questions.
 
                     **The text**
                     ----
