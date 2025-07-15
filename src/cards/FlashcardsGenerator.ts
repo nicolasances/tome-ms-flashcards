@@ -91,7 +91,7 @@ export class FlashcardsGenerator {
 
             const fcStore = new FlashCardsStore(db, this.execContext); 
             
-            const deletedCount = await fcStore.deleteAllFlashcards(topicCode, this.user)
+            const deletedCount = await fcStore.deleteAllFlashcards(topicId, this.user)
 
             this.logger.compute(this.cid, `Deleted ${deletedCount} flashcards for topic ${topicCode} before saving new ones`)
 
