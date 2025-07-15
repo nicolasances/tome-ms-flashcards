@@ -1,13 +1,13 @@
 import { Storage } from "@google-cloud/storage";
 import { Logger } from "toto-api-controller/dist/logger/TotoLogger";
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
-import { LLMAPI } from "../api/LLMAPI";
 import { Request } from "express";
 import { MultipleOptionsFC } from "./MultipleOptionsFC";
 import { FlashCardsStore } from "../store/FlashCardsStore";
 import { ControllerConfig } from "../Config";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
+import { MultipleOptionsFCGenerator } from "./generators/MultipleOptionsFCGenerator";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -22,6 +22,7 @@ export class FlashcardsGenerator {
     authHeader: string;
     user: string;
     config: ControllerConfig;
+    request: Request;
 
     constructor(execContext: ExecutionContext, request: Request, user: string) {
         this.logger = execContext.logger;
@@ -31,6 +32,7 @@ export class FlashcardsGenerator {
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization'])
         this.user = user;
         this.config = execContext.config as ControllerConfig;
+        this.request = request;
     }
 
     async generateFlashcards(topicCode: string, topicId: string) {
@@ -53,7 +55,7 @@ export class FlashcardsGenerator {
         for (const file of files) {
 
             promises.push(async (): Promise<MultipleOptionsFC[]> => {
-
+                
                 this.logger.compute(this.cid, `Reading content of kb file ${file.name}`)
 
                 // 2.1. Read the file content
@@ -63,69 +65,9 @@ export class FlashcardsGenerator {
                 // 2.2. Create the flashcards with an LLM
                 this.logger.compute(this.cid, `Prompting LLM to generate section's flashcards for file ${file.name}`)
 
-                const prompt = `
-                    You are an assistant that creates multiple-choice quiz cards from a historical or non-fictional text.
+                const generatedFlashcards = await new MultipleOptionsFCGenerator(this.execContext, this.request, this.user, topicCode, topicId).generateFlashcards(fileContent);
 
-                    **Your task:**
-                    From the given text, extract key facts and generate **multiple-choice questions** with **only one correct answer** and **3–4 answer options total** (including distractors).
-
-                    **Instructions:**
-                    - Do not invent facts not supported by the text.
-                    - Make sure that the questions cover all names
-                    - Questions should test all of the below: 
-                        + important names (of people, organizations, countries), 
-                        + dates, 
-                        + events, 
-                        + numbers, 
-                        + actions (e.g. "what did this person do?"), 
-                        + concepts (e.g. "what did this law consist of?") 
-                        + causes/effects.
-                    - Format each question as a JSON object.
-                    - When asking for dates, the options might also contain different decades, not just dates that are too close to each other
-                    - Each object must include:  
-                        - "question": The question string  
-                        - "options": An array of 4 strings  
-                        - "answer": The exact correct index from the options array
-                    - Generally:
-                        - For short texts (~100–200 words), 5+ questions is enough.
-                        - For medium (~500 words), 10+ questions.
-                        - For longer or denser texts, more than 20 questions.
-
-                    **The text**
-                    ----
-                    ${fileContent}
-                    ----
-                    **Output format (JSON array):**
-                    {   title: "A Generated title that tells what this text is about, without spoiling dates", 
-                        questions: [
-                            {
-                                "question": "QUESTION TEXT HERE",
-                                "options": ["Option A", "Option B", "Option C", "Option D"],
-                                "answer": index of the right answer
-                            },
-                        ...
-                        ]
-                    }
-                    FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
-                `
-
-                const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
-
-                this.logger.compute(this.cid, `LLM responded with flashcards for file ${file.name}`)
-
-                // 2.3. For each generated flashcard in promisesResult, generate a MultipleOptionsFC 
-                const generatedFlashcards: MultipleOptionsFC[] = llmResponse.value.questions.map(
-                    (flashcard: { question: string; options: string[]; answer: number; }) => {
-                        
-                        const fc = new MultipleOptionsFC(this.user, topicId, topicCode, flashcard.question, flashcard.options, flashcard.answer)
-                        fc.sectionTitle = llmResponse.value.title; // Set the section title from the LLM response
-
-                        // Shuffle the options
-                        fc.shuffleOptions();
-
-                        return fc;
-                    }
-                );
+                this.logger.compute(this.cid, `LLM responded with ${generatedFlashcards.length} flashcards for file ${file.name}`)
 
                 return generatedFlashcards;
 
