@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { MultipleOptionsFC } from "./MultipleOptionsFC";
+import { SectionTimelineFC } from "./SectionTimelineFC";
 
 export interface Card {
 
@@ -14,9 +15,10 @@ export interface Card {
 
 export class FlashcardFactory {
 
-    static newFlashcardFromRequest(type: 'options' | 'gap', request: Request, user: string): Card {
+    static newFlashcardFromRequest(type: 'options' | 'timeline', request: Request, user: string): Card {
 
-        if (type == 'options') return MultipleOptionsFC.fromRequest(request, user)
+        if (type == 'options') return MultipleOptionsFC.fromRequest(request, user);
+        else if (type == 'timeline') return SectionTimelineFC.fromRequest(request, user);
 
         throw new Error(`Card with type ${type} are not supported`)
 
@@ -25,6 +27,7 @@ export class FlashcardFactory {
     static newFlashcardFromBson(bson: any) {
 
         if (bson.type == 'options') return MultipleOptionsFC.fromBSON(bson);
+        else if (bson.type == 'timeline') return SectionTimelineFC.fromBSON(bson);
 
         throw new Error(`Card with type ${bson.type} are not supported`)
     }
