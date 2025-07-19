@@ -8,6 +8,8 @@ import { ControllerConfig } from "../Config";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 import { MultipleOptionsFCGenerator } from "./generators/MultipleOptionsFCGenerator";
+import { SectionTimelineFCGenerator } from "./generators/SectionTimelineFCGenerator";
+import { SectionTimelineFC } from "./SectionTimelineFC";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -54,6 +56,19 @@ export class FlashcardsGenerator {
         let promises = [];
         for (const file of files) {
 
+            // 2.1 Generate a timeline flashcard for each file
+            promises.push(async (): Promise<SectionTimelineFC[]> => {
+
+                this.logger.compute(this.cid, `Generating timeline flashcard for file ${file.name}`)
+    
+                const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId).generateFlashcards(file.name);
+    
+                this.logger.compute(this.cid, `Generated timeline flashcard for file ${file.name}`)
+
+                return timelineFlashcards;
+            })
+
+            // 2.2 Generate multiple options flashcards for each file
             promises.push(async (): Promise<MultipleOptionsFC[]> => {
                 
                 this.logger.compute(this.cid, `Reading content of kb file ${file.name}`)
