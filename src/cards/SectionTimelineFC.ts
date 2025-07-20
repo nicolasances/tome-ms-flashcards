@@ -75,7 +75,6 @@ export interface SectionTimelineEvent {
     event: string;
     date: string; 
     dateFormat: string;
-    real: boolean;
-    order: number;
+    correctIndex: number;
 
 }

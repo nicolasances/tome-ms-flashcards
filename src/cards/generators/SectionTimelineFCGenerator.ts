@@ -25,12 +25,12 @@ export class SectionTimelineFCGenerator {
             You are an assistant that creates multiple-choice quiz cards from a historical or non-fictional text.
 
             **Your task:**
-            From the given text, extract all events into a timeline with **only one correct sequence of events** and including fake events.
+            From the given text, extract all events into a timeline with **only one correct sequence of events**.
 
             **Instructions:**
-            - Do not invent facts not supported by the text, except for the fake events. 
+            - Do not invent facts not supported by the text. 
             - Make sure that all events from the text are included in the timeline.
-            - For each event, provide the date (if available), and a flag indicating whether it is a real event or a fake one. 
+            - For each event, provide the date (if available)
             - For fake events you can make up a realistic date.
             - The timeline should be in chronological order.
             - Evevnts should be well described, but not too long. Aim for 1-2 sentences per event.
@@ -45,8 +45,8 @@ export class SectionTimelineFCGenerator {
                     {
                         "event": "THE EVENT DESCRIPTION HERE",
                         "date":  "the date as a string formatted according to momentjs", // or null if no date is available. If the date is a year, format as YYYY 
-                        "date-format": specifies a momentjs date format for the date
-                        "real": boolean // true if the event is real, false if it is a fake event
+                        "dateFormat": specifies a momentjs date format for the date, 
+                        "correctIndex": the index of the event in the timeline, starting from 0
                     },
                 ...
                 ]
