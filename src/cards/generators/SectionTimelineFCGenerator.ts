@@ -22,18 +22,17 @@ export class SectionTimelineFCGenerator {
     async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
 
         const prompt = `
-            You are an assistant that creates multiple-choice quiz cards from a historical or non-fictional text.
+            You are an assistant that creates quiz cards from a historical or non-fictional text.
 
             **Your task:**
-            From the given text, extract all events into a timeline with **only one correct sequence of events**.
+            From the given text, extract all events and facts into a timeline with **only one correct sequence of events**.
 
             **Instructions:**
-            - Do not invent facts not supported by the text. 
-            - Make sure that all events from the text are included in the timeline.
-            - For each event, provide the date (if available)
-            - For fake events you can make up a realistic date.
-            - The timeline should be in chronological order.
-            - Evevnts should be well described, but not too long. Aim for 1-2 sentences per event.
+            - Do not invent facts or events not supported by the text. ONLY use dates that are in the text.
+            - Make sure that all events and facts from the text are included in the timeline.
+            - For each event or fact, provide the date (if and ONLY IF available)
+            - The timeline should be in chronological order. If no date is available, use the order in which events and facts appear in the text. 
+            - Evevnts should be well described, but not too long. Aim for 1-3 sentences per event.
 
             **The text**
             ----
@@ -43,10 +42,10 @@ export class SectionTimelineFCGenerator {
             {   title: "A Generated title that tells what this text is about", 
                 events: [
                     {
-                        "event": "THE EVENT DESCRIPTION HERE",
-                        "date":  "the date as a string formatted according to momentjs", // or null if no date is available. If the date is a year, format as YYYY 
+                        "event": "THE EVENT OR FACT DESCRIPTION HERE",
+                        "date":  "the date as a string formatted according to momentjs", // or null if no date is available in the text. THE DATE MUST BE IN THE TEXT. If the date is a year, format as YYYY 
                         "dateFormat": specifies a momentjs date format for the date, 
-                        "correctIndex": the index of the event in the timeline, starting from 0
+                        "correctIndex": the index of the event or fact in the timeline, starting from 0. If an event or fact can be in other places in the timeline, set this to null.
                     },
                 ...
                 ]
