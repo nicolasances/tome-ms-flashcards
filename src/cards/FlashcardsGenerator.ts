@@ -56,13 +56,17 @@ export class FlashcardsGenerator {
         let promises = [];
         for (const file of files) {
 
+            // 2.1. Read the file content
+            const [fileBuffer] = await file.download();
+            const fileContent = fileBuffer.toString('utf-8');
+
             // 2.1 Generate a timeline flashcard for each file
             promises.push(async (): Promise<SectionTimelineFC[]> => {
 
                 this.logger.compute(this.cid, `Generating timeline flashcard for file ${file.name}`)
-    
-                const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId).generateFlashcards(file.name);
-    
+
+                const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId).generateFlashcards(fileContent);
+
                 this.logger.compute(this.cid, `Generated timeline flashcard for file ${file.name}`)
 
                 return timelineFlashcards;
@@ -70,12 +74,8 @@ export class FlashcardsGenerator {
 
             // 2.2 Generate multiple options flashcards for each file
             promises.push(async (): Promise<MultipleOptionsFC[]> => {
-                
-                this.logger.compute(this.cid, `Reading content of kb file ${file.name}`)
 
-                // 2.1. Read the file content
-                const [fileBuffer] = await file.download();
-                const fileContent = fileBuffer.toString('utf-8');
+                this.logger.compute(this.cid, `Reading content of kb file ${file.name}`)
 
                 // 2.2. Create the flashcards with an LLM
                 this.logger.compute(this.cid, `Prompting LLM to generate section's flashcards for file ${file.name}`)
@@ -104,8 +104,8 @@ export class FlashcardsGenerator {
             client = await this.config.getMongoClient();
             const db = client.db(this.config.getDBName());
 
-            const fcStore = new FlashCardsStore(db, this.execContext); 
-            
+            const fcStore = new FlashCardsStore(db, this.execContext);
+
             const deletedCount = await fcStore.deleteAllFlashcards(topicId, this.user)
 
             this.logger.compute(this.cid, `Deleted ${deletedCount} flashcards for topic ${topicCode} before saving new ones`)
