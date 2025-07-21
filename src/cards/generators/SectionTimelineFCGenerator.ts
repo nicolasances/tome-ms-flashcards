@@ -28,7 +28,7 @@ export class SectionTimelineFCGenerator {
             From the given text, extract all events and facts into a timeline with **only one correct sequence of events**.
 
             **Instructions:**
-            - Do not invent facts or events not supported by the text. ONLY use dates that are in the text.
+            - The timeline can ONLY contain facts and events that are EXPLICITLY mentioned in the text. ONLY use dates that are in the text.
             - Make sure that all events and facts from the text are included in the timeline.
             - For each event or fact, provide the date (if and ONLY IF available)
             - The timeline should be in chronological order. If no date is available, use the order in which events and facts appear in the text. 
