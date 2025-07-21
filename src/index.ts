@@ -10,7 +10,7 @@ const api = new TotoAPIController("tome-ms-flashcards", new ControllerConfig())
 api.path('POST', '/flashcards', new PostFlashcard())
 api.path('GET', '/flashcards', new GetFlashcards())
 
-api.path('GET', '/corpus/flashcards', new GenerateFlashcards());
+api.path('POST', '/corpus/flashcards', new GenerateFlashcards());
 
 api.path('POST', '/events/topic', new OnTopicEvent())
 
