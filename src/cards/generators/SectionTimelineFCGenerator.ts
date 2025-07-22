@@ -22,7 +22,7 @@ export class SectionTimelineFCGenerator {
     }
 
     static generation() {
-        return "t3.1"
+        return "t4"
     }
 
     async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
