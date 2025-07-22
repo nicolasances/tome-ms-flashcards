@@ -121,7 +121,7 @@ export class FlashcardsGenerator {
             this.logger.compute(this.cid, `Persisted ${insertedCount} flashcards for topic ${topicCode}`);
 
             // 5. Publish an event that flashcards have been generated for the topic
-            new EventPublisher(this.execContext, "tometopics").publishEvent(topicId, EVENTS.flashcardsCreated, `Flashcards generated for topic ${topicCode}`, new FlashcardsCreatedEvent(
+            await new EventPublisher(this.execContext, "tometopics").publishEvent(topicId, EVENTS.flashcardsCreated, `Flashcards generated for topic ${topicCode}`, new FlashcardsCreatedEvent(
                 getFlashcardsGeneration(),
                 topicCode,
                 topicId,
