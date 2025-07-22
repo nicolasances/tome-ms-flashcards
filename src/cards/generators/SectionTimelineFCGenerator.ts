@@ -28,11 +28,18 @@ export class SectionTimelineFCGenerator {
             From the given text, extract all events and facts into a timeline with **only one correct sequence of events**.
 
             **Instructions:**
+            STEPS TO FOLLOW: 
+            1. Read the text carefully.
+            2. Identify if the text actually contains a sequence of historical events or facts.
+            2a. If it does (even if dates are not necessarily available), extract all events and facts into a timeline. 
+            2b. If it does not (i.e. the text does not contain sequence(s) of historical events, but rather description of process, situation, historical situation, concepts, or other non-event facts) return null.
+
+            INSTRUCTIONS FOR THE TIMELINE:
             - The timeline can ONLY contain facts and events that are EXPLICITLY mentioned in the text. ONLY use dates that are in the text.
             - Make sure that all events and facts from the text are included in the timeline.
             - For each event or fact, provide the date (if and ONLY IF available)
             - The timeline should be in chronological order. If no date is available, use the order in which events and facts appear in the text. 
-            - Evevnts should be well described, but not too long. Aim for 1-3 sentences per event.
+            - Events should be well described, but not too long. Aim for 1-3 sentences per event.
 
             **The text**
             ----
@@ -50,10 +57,14 @@ export class SectionTimelineFCGenerator {
                 ...
                 ]
             }
+            RETURN null IF THE TEXT DOES NOT CONTAIN A SEQUENCE OF HISTORICAL EVENTS, as specified in the instructions.
             FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
         `
 
         const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
+
+        // If there is no timelien to generate
+        if (llmResponse.value == null) return [];
 
         const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, llmResponse.value.events, llmResponse.value.title);
 
