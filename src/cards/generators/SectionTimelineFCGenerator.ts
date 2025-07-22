@@ -42,8 +42,8 @@ export class SectionTimelineFCGenerator {
 
             INSTRUCTIONS FOR THE TIMELINE:
             - The timeline can ONLY contain facts and events that are EXPLICITLY mentioned in the text. ONLY use dates that are in the text.
-            - Make sure that all events and facts from the text are included in the timeline.
-            - For each event or fact, provide the date (if and ONLY IF available)
+            - ONLY include events and fact that have a TEMPORAL MEANING, that can be PLACED IN TIME, independently whether the text provides a date for the event (fact) or not. 
+            - Make sure that all events and facts from the text that have a temporal meaning are included in the timeline.
             - The timeline should be in chronological order. If no date is available, use the order in which events and facts appear in the text. 
             - Events should be well described, but not too long. Aim for 1-3 sentences per event.
 
@@ -56,9 +56,9 @@ export class SectionTimelineFCGenerator {
                 events: [
                     {
                         "event": "THE EVENT OR FACT DESCRIPTION HERE",
-                        "date":  "the date as a string formatted according to momentjs", // or null if no date is available in the text. THE DATE MUST BE IN THE TEXT. If the date is a year, format as YYYY 
+                        "date":  "the date as a string formatted according to momentjs", // or null if no date is available in the text. THE DATE MUST BE IN THE TEXT. If the date is a year just return the year as a string. 
                         "dateFormat": specifies a momentjs date format for the date, 
-                        "correctIndex": the index of the event or fact in the timeline, starting from 0. If an event or fact can be in other places in the timeline, set this to null.
+                        "correctIndex": the index of the event or fact in the timeline, starting from 0. 
                     },
                 ...
                 ]
