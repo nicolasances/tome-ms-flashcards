@@ -71,7 +71,7 @@ export class FlashcardsGenerator {
 
                 this.logger.compute(this.cid, `Generating timeline flashcard for file ${file.name}`)
 
-                const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
+                const timelineFlashcards = new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
 
                 this.logger.compute(this.cid, `Generated timeline flashcard for file ${file.name}`)
 
@@ -86,7 +86,7 @@ export class FlashcardsGenerator {
                 // 2.2. Create the flashcards with an LLM
                 this.logger.compute(this.cid, `Prompting LLM to generate section's flashcards for file ${file.name}`)
 
-                const generatedFlashcards = await new MultipleOptionsFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
+                const generatedFlashcards = new MultipleOptionsFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
 
                 this.logger.compute(this.cid, `LLM responded with ${generatedFlashcards.length} flashcards for file ${file.name}`)
 
