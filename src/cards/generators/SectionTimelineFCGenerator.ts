@@ -22,7 +22,7 @@ export class SectionTimelineFCGenerator {
     }
 
     static generation() {
-        return "t2.0"
+        return "t3"
     }
 
     async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
@@ -33,17 +33,25 @@ export class SectionTimelineFCGenerator {
             **Your task:**
             From the given text, extract all events and facts into a timeline with **only one correct sequence of events**.
 
+            ** Definitions ** 
+            An event, in this context, is a fact or happening (event) that have a temporal meaning and can be placed in a timeline compared to all other events in the text.
+
             **Instructions:**
             STEPS TO FOLLOW: 
             1. Read the text carefully.
             2. Identify if the text actually contains a sequence of historical events or facts.
-            2a. If it does (even if dates are not necessarily available), extract all events and facts into a timeline. 
+            2a. If it does (even if dates are not necessarily available), extract all events from the text. 
             2b. If it does not (i.e. the text does not contain sequence(s) of historical events, but rather description of process, situation, historical situation, concepts, or other non-event facts) return null.
+            3. If you have extracted events, look at them in sequence and remove all those that cannot objectively be placed in time compared to all other events. If the text is vague whether an event is to be placed before or after an event, remove it. 
+
+            EXAMPLE: 
+            corpus: Basil's I reign lasted nearly 20 years from 867 to 886 and was generally a success. He reconciled with the Roman Pope, he expanded the influence of Byzantium through Orthodoxy to Bulgaria and Serbia, he reconquered some territories, both east and west (mostly in Italy), he consolidated laws. 
+            expected filtering: none of the events shown can be placed one before the other, as the text does not specify a time ordering. These MUST be excluded.
+
 
             INSTRUCTIONS FOR THE TIMELINE:
-            - The timeline can ONLY contain facts and events that are EXPLICITLY mentioned in the text. ONLY use dates that are in the text.
-            - ONLY include events and fact that have a TEMPORAL MEANING, that can be PLACED IN TIME, independently whether the text provides a date for the event (fact) or not. 
-            - Make sure that all events and facts from the text that have a temporal meaning are included in the timeline.
+            - The timeline can ONLY contain events that are EXPLICITLY mentioned in the text. ONLY use dates that are in the text.
+            - Make sure that all events from the text that have a temporal meaning and can be univoquely placed in a timeline compared to the other events are included in the timeline.
             - The timeline should be in chronological order. If no date is available, use the order in which events and facts appear in the text. 
             - Events should be well described, but not too long. Aim for 1-3 sentences per event.
 
