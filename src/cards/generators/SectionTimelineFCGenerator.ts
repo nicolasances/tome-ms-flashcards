@@ -21,6 +21,10 @@ export class SectionTimelineFCGenerator {
         this.topicId = topicId;
     }
 
+    static generation() {
+        return "t2.0"
+    }
+
     async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
 
         const prompt = `

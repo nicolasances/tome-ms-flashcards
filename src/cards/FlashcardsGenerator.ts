@@ -10,6 +10,9 @@ import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeErro
 import { MultipleOptionsFCGenerator } from "./generators/MultipleOptionsFCGenerator";
 import { SectionTimelineFCGenerator } from "./generators/SectionTimelineFCGenerator";
 import { SectionTimelineFC } from "./SectionTimelineFC";
+import { EventPublisher, EVENTS } from "../evt/EventPublisher";
+import { FlashcardsCreatedEvent } from "../evt/model/FlashcardsCreatedEvent";
+import { getFlashcardsGeneration } from "../util/FlashcardGeneration";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -134,7 +137,15 @@ export class FlashcardsGenerator {
             if (client) client.close();
         }
 
-        // 4. Return the generated flashcards
+        // 5. Publish an event that flashcards have been generated for the topic
+        new EventPublisher(this.execContext, "tometopics").publishEvent(topicId, EVENTS.flashcardsCreated, `Flashcards generated for topic ${topicCode}`, new FlashcardsCreatedEvent(
+            getFlashcardsGeneration(), 
+            topicCode, 
+            topicId,
+            generatedFlashcards.length,
+        ))
+
+        // 5. Return the generated flashcards
         return { flashcards: generatedFlashcards }
     }
 }
