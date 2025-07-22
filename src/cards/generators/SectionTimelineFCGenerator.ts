@@ -22,7 +22,7 @@ export class SectionTimelineFCGenerator {
     }
 
     static generation() {
-        return "t3"
+        return "t3.1"
     }
 
     async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
@@ -34,24 +34,34 @@ export class SectionTimelineFCGenerator {
             From the given text, extract all events and facts into a timeline with **only one correct sequence of events**.
 
             ** Definitions ** 
-            An event, in this context, is a fact or happening (event) that have a temporal meaning and can be placed in a timeline compared to all other events in the text.
+            An event, in this context, is a fact or happening (event) that have a temporal meaning and can be placed in a timeline.
 
             **Instructions:**
             STEPS TO FOLLOW: 
             1. Read the text carefully.
-            2. Identify if the text actually contains a sequence of historical events or facts.
-            2a. If it does (even if dates are not necessarily available), extract all events from the text. 
-            2b. If it does not (i.e. the text does not contain sequence(s) of historical events, but rather description of process, situation, historical situation, concepts, or other non-event facts) return null.
-            3. If you have extracted events, look at them in sequence and remove all those that cannot objectively be placed in time compared to all other events. If the text is vague whether an event is to be placed before or after an event, remove it. 
+            2. Determine whether it contains a sequence of historical events or facts.
+                2a. If it does (even if dates are not necessarily available), extract all events from the text. 
+                2b. If it does not (i.e. the text does not contain sequence(s) of historical events, but rather description of process, situation, historical situation, concepts, or other non-event facts) return null.
+            3. List all events in chronological order. 
+            4. VERY IMPORTANT STEP: Filter events, EXCLUDING events based on the following logic:
+             - If multiple actions or achievements are listed together (e.g. “he did A. he did B. he did C”), only include them if their **temporal order is explicitly given** THROUGH WORDS LIKE "before, after, earlier, later". 
+             - Otherwise, if no words like "before, then, after, earlier, later" or similar are used, DISCARD them.
+            These are some examples of correct filtering: 
+            
+            EXAMPLE 1: 
+            corpus: "He will first fight in Spain to support the Zaragoza Arabs against the Cordoba Arabs, but will not endure long there. After that, he will fight in Hungary"
+            expected result: **include** two events: 
+             - He will first fight in Spain to support the Zaragoza Arabs against the Cordoba Arabs (correctIndex: 0)
+             - He will fight in Hungary (correctIndex: 1)
 
-            EXAMPLE: 
-            corpus: Basil's I reign lasted nearly 20 years from 867 to 886 and was generally a success. He reconciled with the Roman Pope, he expanded the influence of Byzantium through Orthodoxy to Bulgaria and Serbia, he reconquered some territories, both east and west (mostly in Italy), he consolidated laws. 
-            expected filtering: none of the events shown can be placed one before the other, as the text does not specify a time ordering. These MUST be excluded.
+            EXAMPLE 2: 
+            corpus: "He will first fight in Spain to support the Zaragoza Arabs against the Cordoba Arabs, but will not endure long there. He will fight in Hungary"
+            expected result: **DISCARD** from timeline
 
 
             INSTRUCTIONS FOR THE TIMELINE:
             - The timeline can ONLY contain events that are EXPLICITLY mentioned in the text. ONLY use dates that are in the text.
-            - Make sure that all events from the text that have a temporal meaning and can be univoquely placed in a timeline compared to the other events are included in the timeline.
+            - Make sure that all events from the text that have a temporal order are included in the timeline.
             - The timeline should be in chronological order. If no date is available, use the order in which events and facts appear in the text. 
             - Events should be well described, but not too long. Aim for 1-3 sentences per event.
 
