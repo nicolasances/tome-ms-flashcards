@@ -43,8 +43,8 @@ export class GenerateFlashcards implements TotoDelegate {
 
         logger.compute(cid, `[GenerateFlashcards] Generating flashcards for topic ${topicCode} with type ${flashcardType}.`);
 
-        if (flashcardType == 'options') return await new MultipleOptionsFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid').generateFlashcards(corpus);
-        else if (flashcardType == 'timeline') return await new SectionTimelineFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid').generateFlashcards(corpus);
+        if (flashcardType == 'options') return await new MultipleOptionsFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
+        else if (flashcardType == 'timeline') return await new SectionTimelineFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
 
         logger.compute(cid, `[GenerateFlashcards] Generated flashcards for topic ${topicCode} with type ${flashcardType}.`);
 

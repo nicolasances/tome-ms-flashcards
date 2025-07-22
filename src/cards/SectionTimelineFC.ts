@@ -10,6 +10,7 @@ export class SectionTimelineFC implements Card {
     user: string
     topicId: string
     topicCode: string;
+    sectionCode: string;
 
     sectionTitle: string; 
     events: SectionTimelineEvent[]; 
@@ -19,18 +20,20 @@ export class SectionTimelineFC implements Card {
         user: string,
         topicId: string,
         topicCode: string,
+        sectionCode: string, 
         events: SectionTimelineEvent[],
         sectionTitle: string
     ) {
         this.user = user;
         this.topicId = topicId;
         this.topicCode = topicCode;
+        this.sectionCode = sectionCode;
         this.events = events;
         this.sectionTitle = sectionTitle;
     }
 
     toBSON() {
-        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, events: this.events, sectionTitle: this.sectionTitle }
+        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, sectionCode: this.sectionCode, events: this.events, sectionTitle: this.sectionTitle }
     }
 
     /**
@@ -54,14 +57,15 @@ export class SectionTimelineFC implements Card {
         if (!body.topicId) throw new ValidationError(400, "No topic id provided");
         if (!body.events) throw new ValidationError(400, "No events provided");
         if (!body.sectionTitle) throw new ValidationError(400, "No title provided");
+        if (!body.sectionCode) throw new ValidationError(400, "No section code provided");
 
-        return new SectionTimelineFC(user, body.topicId, body.topicCode, body.events, body.sectionTitle)
+        return new SectionTimelineFC(user, body.topicId, body.topicCode, body.sectionCode, body.events, body.sectionTitle)
 
     }
 
     static fromBSON(bson: WithId<any>): SectionTimelineFC {
 
-        const card = new SectionTimelineFC(bson.user, bson.topicId, bson.topicCode, bson.events, bson.sectionTitle);
+        const card = new SectionTimelineFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.events, bson.sectionTitle);
         card.id = bson._id.toHexString()
 
         return card

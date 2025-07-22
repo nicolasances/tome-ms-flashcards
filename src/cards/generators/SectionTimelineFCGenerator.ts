@@ -10,12 +10,14 @@ export class SectionTimelineFCGenerator {
     user: string;
     topicCode: string;
     topicId: string;
+    sectionCode: string;
 
-    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string) {
+    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string) {
         this.execContext = execContext;
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization']);
         this.user = user;
         this.topicCode = topicCode;
+        this.sectionCode = sectionCode;
         this.topicId = topicId;
     }
 
@@ -66,7 +68,7 @@ export class SectionTimelineFCGenerator {
         // If there is no timelien to generate
         if (llmResponse.value == null) return [];
 
-        const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, llmResponse.value.events, llmResponse.value.title);
+        const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, this.sectionCode, llmResponse.value.events, llmResponse.value.title);
 
         // Shuffle the events
         card.shuffleEvents();

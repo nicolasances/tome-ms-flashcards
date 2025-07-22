@@ -9,13 +9,15 @@ export class MultipleOptionsFCGenerator {
     authHeader: string;
     user: string;
     topicCode: string;
+    sectionCode: string;
     topicId: string;
 
-    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string) {
+    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string) {
         this.execContext = execContext;
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization']);
         this.user = user;
         this.topicCode = topicCode;
+        this.sectionCode = sectionCode;
         this.topicId = topicId;
     }
 
@@ -75,7 +77,7 @@ export class MultipleOptionsFCGenerator {
         const generatedFlashcards: MultipleOptionsFC[] = llmResponse.value.questions.map(
             (flashcard: { question: string; options: string[]; answer: number; }) => {
 
-                const fc = new MultipleOptionsFC(this.user, this.topicId, this.topicCode, flashcard.question, flashcard.options, flashcard.answer)
+                const fc = new MultipleOptionsFC(this.user, this.topicId, this.topicCode, this.sectionCode, flashcard.question, flashcard.options, flashcard.answer)
                 fc.sectionTitle = llmResponse.value.title; // Set the section title from the LLM response
 
                 // Shuffle the options

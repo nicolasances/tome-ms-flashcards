@@ -60,12 +60,15 @@ export class FlashcardsGenerator {
             const [fileBuffer] = await file.download();
             const fileContent = fileBuffer.toString('utf-8');
 
+            // Extract the section code from the file name (the file name is expected to be in the format {sectionCode}.txt)
+            const sectionCode = file.name.split('/').pop()?.replace('.txt', '');
+
             // 2.1 Generate a timeline flashcard for each file
             promises.push(async (): Promise<SectionTimelineFC[]> => {
 
                 this.logger.compute(this.cid, `Generating timeline flashcard for file ${file.name}`)
 
-                const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId).generateFlashcards(fileContent);
+                const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
 
                 this.logger.compute(this.cid, `Generated timeline flashcard for file ${file.name}`)
 
@@ -80,7 +83,7 @@ export class FlashcardsGenerator {
                 // 2.2. Create the flashcards with an LLM
                 this.logger.compute(this.cid, `Prompting LLM to generate section's flashcards for file ${file.name}`)
 
-                const generatedFlashcards = await new MultipleOptionsFCGenerator(this.execContext, this.request, this.user, topicCode, topicId).generateFlashcards(fileContent);
+                const generatedFlashcards = await new MultipleOptionsFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
 
                 this.logger.compute(this.cid, `LLM responded with ${generatedFlashcards.length} flashcards for file ${file.name}`)
 
