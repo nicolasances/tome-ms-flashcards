@@ -22,6 +22,7 @@ export class MultipleOptionsFC implements Card {
     rightAnswerIndex: number;
 
     sectionTitle?: string; 
+    sectionShortTitle: string;
 
     constructor(
         user: string,
@@ -30,7 +31,8 @@ export class MultipleOptionsFC implements Card {
         sectionCode: string, 
         question: string,
         options: string[],
-        rightAnswerIndex: number
+        rightAnswerIndex: number, 
+        sectionShortTitle: string
     ) {
         this.user = user;
         this.topicId = topicId;
@@ -39,10 +41,11 @@ export class MultipleOptionsFC implements Card {
         this.question = question;
         this.options = options;
         this.rightAnswerIndex = rightAnswerIndex;
+        this.sectionShortTitle = sectionShortTitle;
     }
 
     toBSON() {
-        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, sectionCode: this.sectionCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex, sectionTitle: this.sectionTitle }
+        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, sectionCode: this.sectionCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex, sectionShortTitle: this.sectionShortTitle }
     }
 
     /**
@@ -80,14 +83,15 @@ export class MultipleOptionsFC implements Card {
         if (!body.question) throw new ValidationError(400, "No question provided");
         if (!body.options || body.options.length < 2) throw new ValidationError(400, "No (or not enough) options provided");
         if (!body.rightAnswerIndex) throw new ValidationError(400, "No right answer provided");
+        if (!body.sectionShortTitle) throw new ValidationError(400, "No section short title provided");
 
-        return new MultipleOptionsFC(user, body.topicId, body.topicCode, body.sectionCode, body.question, body.options, body.rightAnswerIndex)
+        return new MultipleOptionsFC(user, body.topicId, body.topicCode, body.sectionCode, body.question, body.options, body.rightAnswerIndex, body.sectionShortTitle)
 
     }
 
     static fromBSON(bson: WithId<any>): MultipleOptionsFC {
 
-        const card = new MultipleOptionsFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.question, bson.options, bson.rightAnswerIndex)
+        const card = new MultipleOptionsFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.question, bson.options, bson.rightAnswerIndex, bson.sectionShortTitle)
         card.id = bson._id.toHexString()
         card.sectionTitle = bson.sectionTitle;
 

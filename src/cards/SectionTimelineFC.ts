@@ -13,6 +13,7 @@ export class SectionTimelineFC implements Card {
     sectionCode: string;
 
     sectionTitle: string; 
+    sectionShortTitle: string;
     events: SectionTimelineEvent[]; 
 
 
@@ -22,7 +23,8 @@ export class SectionTimelineFC implements Card {
         topicCode: string,
         sectionCode: string, 
         events: SectionTimelineEvent[],
-        sectionTitle: string
+        sectionTitle: string,
+        sectionShortTitle: string
     ) {
         this.user = user;
         this.topicId = topicId;
@@ -30,10 +32,11 @@ export class SectionTimelineFC implements Card {
         this.sectionCode = sectionCode;
         this.events = events;
         this.sectionTitle = sectionTitle;
+        this.sectionShortTitle = sectionShortTitle;
     }
 
     toBSON() {
-        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, sectionCode: this.sectionCode, events: this.events, sectionTitle: this.sectionTitle }
+        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, sectionCode: this.sectionCode, events: this.events, sectionTitle: this.sectionTitle, sectionShortTitle: this.sectionShortTitle };
     }
 
     /**
@@ -58,14 +61,15 @@ export class SectionTimelineFC implements Card {
         if (!body.events) throw new ValidationError(400, "No events provided");
         if (!body.sectionTitle) throw new ValidationError(400, "No title provided");
         if (!body.sectionCode) throw new ValidationError(400, "No section code provided");
+        if (!body.sectionShortTitle) throw new ValidationError(400, "No section short title provided");
 
-        return new SectionTimelineFC(user, body.topicId, body.topicCode, body.sectionCode, body.events, body.sectionTitle)
+        return new SectionTimelineFC(user, body.topicId, body.topicCode, body.sectionCode, body.events, body.sectionTitle, body.sectionShortTitle)
 
     }
 
     static fromBSON(bson: WithId<any>): SectionTimelineFC {
 
-        const card = new SectionTimelineFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.events, bson.sectionTitle);
+        const card = new SectionTimelineFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.events, bson.sectionTitle, bson.sectionShortTitle);
         card.id = bson._id.toHexString()
 
         return card

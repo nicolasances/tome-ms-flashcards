@@ -61,6 +61,7 @@ export class MultipleOptionsFCGenerator {
             ----
             **Output format (JSON array):**
             {   title: "A Generated title that tells what this text is about, without spoiling dates", 
+                shortTitle: "A generated 2 words title for the text", 
                 questions: [
                     {
                         "question": "QUESTION TEXT HERE",
@@ -79,7 +80,7 @@ export class MultipleOptionsFCGenerator {
         const generatedFlashcards: MultipleOptionsFC[] = llmResponse.value.questions.map(
             (flashcard: { question: string; options: string[]; answer: number; }) => {
 
-                const fc = new MultipleOptionsFC(this.user, this.topicId, this.topicCode, this.sectionCode, flashcard.question, flashcard.options, flashcard.answer)
+                const fc = new MultipleOptionsFC(this.user, this.topicId, this.topicCode, this.sectionCode, flashcard.question, flashcard.options, flashcard.answer, llmResponse.value.shortTitle);
                 fc.sectionTitle = llmResponse.value.title; // Set the section title from the LLM response
 
                 // Shuffle the options

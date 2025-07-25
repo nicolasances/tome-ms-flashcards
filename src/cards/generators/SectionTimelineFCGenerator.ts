@@ -71,6 +71,7 @@ export class SectionTimelineFCGenerator {
             ----
             **Output format (JSON array):**
             {   title: "A Generated title that tells what this text is about", 
+                shortTitle: "A generated 2 words title for the text", 
                 events: [
                     {
                         "event": "THE EVENT OR FACT DESCRIPTION HERE",
@@ -90,7 +91,7 @@ export class SectionTimelineFCGenerator {
         // If there is no timelien to generate
         if (llmResponse.value == null) return [];
 
-        const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, this.sectionCode, llmResponse.value.events, llmResponse.value.title);
+        const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, this.sectionCode, llmResponse.value.events, llmResponse.value.title, llmResponse.value.shortTitle);
 
         // Shuffle the events
         card.shuffleEvents();
