@@ -21,7 +21,7 @@ export class MultipleOptionsFCGenerator {
         this.topicId = topicId;
     }
 
-    static generation() {return "o1"}
+    static generation() {return "o2"}
 
     async generateFlashcards(corpus: string): Promise<MultipleOptionsFC[]> {
 
