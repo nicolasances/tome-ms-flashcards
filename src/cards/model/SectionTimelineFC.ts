@@ -1,5 +1,5 @@
 import { WithId } from "mongodb";
-import { Card } from "./Card";
+import { Card } from "../Card";
 import { Request } from "express";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 

@@ -1,6 +1,6 @@
 import { Request } from "express";
-import { MultipleOptionsFC } from "./MultipleOptionsFC";
-import { SectionTimelineFC } from "./SectionTimelineFC";
+import { MultipleOptionsFC } from "./model/MultipleOptionsFC";
+import { SectionTimelineFC } from "./model/SectionTimelineFC";
 
 export interface Card {
 

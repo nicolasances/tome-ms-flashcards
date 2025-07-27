@@ -1,6 +1,6 @@
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
 import { LLMAPI } from "../../api/LLMAPI";
-import { MultipleOptionsFC } from "../MultipleOptionsFC";
+import { MultipleOptionsFC } from "../model/MultipleOptionsFC";
 import { Request } from "express";
 
 export class MultipleOptionsFCGenerator {

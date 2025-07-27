@@ -1,7 +1,7 @@
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
 import { LLMAPI } from "../../api/LLMAPI";
 import { Request } from "express";
-import { SectionTimelineFC } from "../SectionTimelineFC";
+import { SectionTimelineFC } from "../model/SectionTimelineFC";
 
 export class SectionTimelineFCGenerator {
 
