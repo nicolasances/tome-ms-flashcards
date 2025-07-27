@@ -48,6 +48,9 @@ export class SectionTimelineFCGenerator {
             - Events should be well described, but not too long. Aim for 1-3 sentences per event.
             - If the text mentions a **reason** for which an event happens, include it in the event description.
             - If the text mentions a **consequence** of an event, include it in the event description.
+            - In the event description you should ALWAYS: 
+                - Exclude dates
+                - Exclude numbers and quantities (unless royal titles, e.g. "King Charles III")
 
             **The text**
             ----
