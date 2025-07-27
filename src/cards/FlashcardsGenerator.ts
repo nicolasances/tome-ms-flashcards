@@ -13,6 +13,8 @@ import { SectionTimelineFC } from "./model/SectionTimelineFC";
 import { EventPublisher, EVENTS } from "../evt/EventPublisher";
 import { FlashcardsCreatedEvent } from "../evt/model/FlashcardsCreatedEvent";
 import { getFlashcardsGeneration } from "../util/FlashcardGeneration";
+import { DateFC } from "./model/DateFC";
+import { DateFCGenerator } from "./generators/DateFCGenerator";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -73,11 +75,11 @@ export class FlashcardsGenerator {
                 // 2.1 Generate a timeline flashcard for each file
                 promises.push(async (): Promise<SectionTimelineFC[]> => {
 
-                    this.logger.compute(this.cid, `Generating timeline flashcard for file ${file.name}`)
+                    this.logger.compute(this.cid, `[Generating Timeline Flashcards] Generating timeline flashcard for file ${file.name}`)
 
                     const timelineFlashcards = await new SectionTimelineFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
 
-                    this.logger.compute(this.cid, `Generated timeline flashcard for file ${file.name}`)
+                    this.logger.compute(this.cid, `[Generating Timeline Flashcards] Generated timeline flashcard for file ${file.name}`)
 
                     return timelineFlashcards;
                 })
@@ -85,14 +87,26 @@ export class FlashcardsGenerator {
                 // 2.2 Generate multiple options flashcards for each file
                 promises.push(async (): Promise<MultipleOptionsFC[]> => {
 
-                    this.logger.compute(this.cid, `Reading content of kb file ${file.name}`)
+                    this.logger.compute(this.cid, `[Generating Multiple Options Flashcards] Reading content of kb file ${file.name}`)
 
                     // 2.2. Create the flashcards with an LLM
-                    this.logger.compute(this.cid, `Prompting LLM to generate section's flashcards for file ${file.name}`)
-
                     const generatedFlashcards = await new MultipleOptionsFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
 
-                    this.logger.compute(this.cid, `LLM responded with ${generatedFlashcards.length} flashcards for file ${file.name}`)
+                    this.logger.compute(this.cid, `[Generating Multiple Options Flashcards] LLM responded with ${generatedFlashcards.length} flashcards for file ${file.name}`)
+
+                    return generatedFlashcards;
+
+                })
+
+                // 2.3 Generate date flashcards for each file
+                promises.push(async (): Promise<DateFC[]> => {
+
+                    this.logger.compute(this.cid, `[Generating Date Flashcards] Reading content of kb file ${file.name}`)
+
+                    // 2.2. Create the flashcards with an LLM
+                    const generatedFlashcards = await new DateFCGenerator(this.execContext, this.request, this.user, topicCode, topicId, sectionCode!).generateFlashcards(fileContent);
+
+                    this.logger.compute(this.cid, `[Generating Date Flashcards] LLM responded with ${generatedFlashcards.length} flashcards for file ${file.name}`)
 
                     return generatedFlashcards;
 

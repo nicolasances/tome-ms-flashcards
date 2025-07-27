@@ -21,7 +21,7 @@ export class MultipleOptionsFCGenerator {
         this.topicId = topicId;
     }
 
-    static generation() {return "o2"}
+    static generation() {return "o3"}
 
     async generateFlashcards(corpus: string): Promise<MultipleOptionsFC[]> {
 
@@ -34,22 +34,18 @@ export class MultipleOptionsFCGenerator {
             **Instructions:**
             - Do not invent facts not supported by the text.
             - Make sure that the questions cover all names
+            - DO NOT have dates in the questions. You may have centuries or months, but never specific dates or years.
             - Questions should test all of the below: 
                 + important names (of people, organizations, countries), 
-                + dates, 
-                + events, 
+                + events, BUT DO NOT GENERATE QUESTIONS ON DATES
+                + facts or trivia,
                 + numbers, 
                 + actions (e.g. "what did this person do?"), 
                 + concepts (e.g. "what did this law consist of?") 
                 + causes/effects.
             - Format each question as a JSON object.
-            - When asking for dates, the options might also contain different decades, not just dates that are too close to each other
             - Each question must be clear. The context must be clear. Example of a poor question: "What happened to the 7 and 10-year-old children of the dead king?", because the user does not know "who the dead king is". A better question would be: "What happened to the 7 and 10-year-old children of King X, who died in 1234?".
             - Never used sentences like "According to the text" or reference "the text" in the questions.
-            - Each object must include:  
-                - "question": The question string  
-                - "options": An array of 4 strings  
-                - "answer": The exact correct index from the options array
             - Generally:
                 - For short texts (~100-200 words), 5-10 questions is enough.
                 - For medium (~500 words), 10-25 questions.
