@@ -8,6 +8,7 @@ import { MultipleOptionsFCGenerator } from "../cards/generators/MultipleOptionsF
 import { SectionTimelineFCGenerator } from "../cards/generators/SectionTimelineFCGenerator";
 import { DateFCGenerator } from "../cards/generators/DateFCGenerator";
 import { KnowledgeBase } from "../store/KnowledgeBase";
+import { HistoricalGraphGenerator } from "../cards/generators/HistoricalGraphGenerator";
 
 /**
  * API to generate flashcards for a given content. 
@@ -43,6 +44,7 @@ export class GenerateFlashcards implements TotoDelegate {
         if (flashcardType == 'options') return await new MultipleOptionsFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
         else if (flashcardType == 'timeline') return await new SectionTimelineFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
         else if (flashcardType == 'date') return await new DateFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
+        else if (flashcardType == 'graph') return await new HistoricalGraphGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
 
         logger.compute(cid, `[GenerateFlashcards] Generated flashcards for topic ${topicCode} with type ${flashcardType}.`);
 
