@@ -47,8 +47,6 @@ export class GenerateFlashcards implements TotoDelegate {
         else if (flashcardType == 'graph') return await new HistoricalGraphGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode).generateFlashcards(corpus);
         else throw new ValidationError(400, `Flashcard type ${flashcardType} is not supported.`);
 
-        logger.compute(cid, `[GenerateFlashcards] Generated flashcards for topic ${topicCode} with type ${flashcardType}.`);
-
     }
 
 }
