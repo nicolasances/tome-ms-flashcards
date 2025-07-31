@@ -2,6 +2,7 @@ import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContex
 import { LLMAPI, LLMPromptResponse } from "../../api/LLMAPI";
 import { Request } from "express";
 import { SectionTimelineFC } from "../model/SectionTimelineFC";
+import { HistoricalGraphFC } from "../model/HistoricalGraphFC";
 
 export class HistoricalGraphGenerator {
 
@@ -25,7 +26,7 @@ export class HistoricalGraphGenerator {
         return "gr1"
     }
 
-    async generateFlashcards(corpus: string): Promise<LLMPromptResponse> {
+    async generateFlashcards(corpus: string): Promise<HistoricalGraphFC[]> {
 
         const prompt = `
             You are an assistant that creates historical graphs from a historical text. 
@@ -35,6 +36,9 @@ export class HistoricalGraphGenerator {
 
             **Instructions:**
             - Read the text carefully. 
+            - If this does not fit the following criteria, return null: 
+                1. It has to be a historical text, i.e. a text that describes a sequence of historical events.
+                2. It has to contain a sequence of events that are connected in a causal or chronological way.
             - Extract all historical events and sort them by **chronological** or **causal** order. 
             - Track whether the link between two events is causal or purely chronological.
             - Separately extract all facts (i.e. interesting facts, concepts, things that are not events) from the text. 
@@ -74,7 +78,8 @@ export class HistoricalGraphGenerator {
                 facts: [ // an array of facts (i.e. are not events) contained in the text
                     {
                         "fact": "A fact description here. 1-3 sentences.", 
-                        "eventCode": "a unique short code for the event this fact is connected to, or null if not related to any event"
+                        "eventCode": "a unique short code for the event this fact is connected to, or null if not related to any event",
+                        "linkReason": "the reason for the link to the specified event, if applicable. If the fact is not related to any event, this field should be null."
                     }
                 ]
             }
@@ -84,7 +89,11 @@ export class HistoricalGraphGenerator {
 
         const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
 
-        return llmResponse;
+        if (!llmResponse || !llmResponse.value || !llmResponse.value.eventGraph) {
+            return [];
+        }
+
+        return [HistoricalGraphFC.fromLLMResponse(llmResponse, this.topicId, this.topicCode, this.sectionCode, this.user)];
     }
 
 }

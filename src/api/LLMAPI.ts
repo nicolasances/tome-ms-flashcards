@@ -46,4 +46,6 @@ export interface LLMPromptResponse {
 
     format: "json" | "text";
     value: any;
+    llmName: string; // The name of the LLM that generated this response
+    llmProvider: string; // The provider of the LLM that generated this response, e.g. "aws", "gcp", etc.
 }

@@ -6,8 +6,11 @@ import { DateFC } from "./model/DateFC";
 export interface Card {
 
     id?: string
-    topicCode: string;
     type: string;
+    topicId: string
+    topicCode: string;
+    sectionCode: string;
+    
     user: string;
 
     toBSON(): any;
