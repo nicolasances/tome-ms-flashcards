@@ -2,8 +2,9 @@ import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContex
 import { LLMAPI } from "../../api/LLMAPI";
 import { MultipleOptionsFC } from "../model/MultipleOptionsFC";
 import { Request } from "express";
+import { FlashcardsGenerator } from "./IFlashcardsGenerator";
 
-export class MultipleOptionsFCGenerator {
+export class MultipleOptionsFCGenerator implements FlashcardsGenerator {
 
     execContext: ExecutionContext;
     authHeader: string;
@@ -21,7 +22,7 @@ export class MultipleOptionsFCGenerator {
         this.topicId = topicId;
     }
 
-    static generation() {return "o3"}
+    generation() {return "o3"}
 
     async generateFlashcards(corpus: string): Promise<MultipleOptionsFC[]> {
 

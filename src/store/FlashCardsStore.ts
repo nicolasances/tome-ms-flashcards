@@ -51,7 +51,21 @@ export class FlashCardsStore {
      */
     async deleteAllFlashcards(topicId: string, user: string): Promise<number> {
 
-        const result = await this.db.collection(this.collections.cards).deleteMany({ topicId: topicId })
+        const result = await this.db.collection(this.collections.cards).deleteMany({ topicId: topicId})
+
+        return result.deletedCount;
+    }
+
+    /**
+     * Deletes all flashcards of the specified user for the specified topic
+     * 
+     * @param topicId the topic id
+     * @param user the owner of the flashcards
+     * @returns the deleted count
+     */
+    async deleteAllSectionFlashcards(topicId: string, user: string, sectionCode: string, type: string): Promise<number> {
+
+        const result = await this.db.collection(this.collections.cards).deleteMany({ topicId: topicId, sectionCode: sectionCode, type: type, user: user });
 
         return result.deletedCount;
     }

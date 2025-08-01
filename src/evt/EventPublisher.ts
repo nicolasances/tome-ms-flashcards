@@ -89,12 +89,15 @@ export interface PublishingResult {
     published: boolean
 }
 
-export type TOPIC_TYPE = "tometopics" 
+export type TOPIC_TYPE = "tometopics" | "tomeflashcards"
 
 export const EVENTS = {
 
     // Flashcards for a topic have been created
     flashcardsCreated: "flashcardsCreated",
+
+    // Flashcard generation requested
+    flashcardsGenerationRequested: "flashcardsGenerationRequested",
 
 }
 

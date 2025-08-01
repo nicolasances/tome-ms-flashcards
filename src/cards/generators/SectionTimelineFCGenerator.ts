@@ -2,8 +2,9 @@ import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContex
 import { LLMAPI } from "../../api/LLMAPI";
 import { Request } from "express";
 import { SectionTimelineFC } from "../model/SectionTimelineFC";
+import { FlashcardsGenerator } from "./IFlashcardsGenerator";
 
-export class SectionTimelineFCGenerator {
+export class SectionTimelineFCGenerator implements FlashcardsGenerator {
 
     execContext: ExecutionContext;
     authHeader: string;
@@ -21,7 +22,7 @@ export class SectionTimelineFCGenerator {
         this.topicId = topicId;
     }
 
-    static generation() {
+    generation() {
         return "t6"
     }
 

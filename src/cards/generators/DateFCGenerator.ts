@@ -2,8 +2,9 @@ import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContex
 import { LLMAPI } from "../../api/LLMAPI";
 import { DateFC } from "../model/DateFC";
 import { Request } from "express";
+import { FlashcardsGenerator } from "./IFlashcardsGenerator";
 
-export class DateFCGenerator {
+export class DateFCGenerator implements FlashcardsGenerator {
 
     execContext: ExecutionContext;
     authHeader: string;
@@ -21,7 +22,7 @@ export class DateFCGenerator {
         this.topicId = topicId;
     }
 
-    static generation() {return "d1"}
+    generation() {return "d1"}
 
     async generateFlashcards(corpus: string): Promise<DateFC[]> {
 

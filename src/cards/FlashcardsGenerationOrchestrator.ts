@@ -21,7 +21,7 @@ import { HistoricalGraphGenerator } from "./generators/HistoricalGraphGenerator"
 /**
  * This class is responsible for generating flashcards for a given topic 
  */
-export class FlashcardsGenerator {
+export class FlashcardsGenerationOrchestrator {
 
     logger: Logger;
     cid: string | undefined;
@@ -33,15 +33,74 @@ export class FlashcardsGenerator {
     config: ControllerConfig;
     request: Request;
 
-    constructor(execContext: ExecutionContext, request: Request, user: string) {
+    constructor(execContext: ExecutionContext, cid: string, request: Request, user: string) {
         this.logger = execContext.logger;
-        this.cid = execContext.cid;
+        this.cid = cid;
         this.execContext = execContext;
+        this.execContext.cid = cid; // Overwrite
         this.bucketName = `${process.env['GCP_PID']}-tome-bucket`
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization'])
         this.user = user;
         this.config = execContext.config as ControllerConfig;
         this.request = request;
+    }
+
+    /**
+     * This method starts the process of generating flashcards for a given topic.
+     * It's an ORCHESTRATOR. 
+     * It retrieves the files from the GCS bucket and for each file and each type of flashcard to be generated, it sends an event on PubSub to generate flashcards for that section and flashcard type.
+     */
+    async startProcess(topicCode: string, topicId: string) {
+
+        this.logger.compute(this.cid, `Starting the process to generate Flashcards for topic ${topicCode}`)
+
+        try {
+
+            // 1. Retrieve from GCS all the files related to the specified topic (topic code)
+            // 1.1. Get the bucket
+            const storage = new Storage();
+            const bucket = storage.bucket(this.bucketName);
+
+            // 1.2 Get all the files in the folder {kbBaseFolder}/{topicCode}
+            const [files] = await bucket.getFiles({ prefix: `${this.kbBaseFolder}/${topicCode}/` });
+
+            this.logger.compute(this.cid, `Found ${files.length} files in knowledge base for topic ${topicCode}`)
+
+            // 2. For each file in the bucket read the content (text) and prompt an LLM to generate flashcards 
+            // Run in parallel and wait for all requests to be done
+            for (const file of files) {
+
+                // 2.1 Extract the section code from the file name (the file name is expected to be in the format {sectionCode}.txt)
+                const sectionCode = file.name.split('/').pop()?.replace('.txt', '');
+
+                // 2.2 Send all pub sub messages
+                await new EventPublisher(this.execContext, "tomeflashcards").publishEvent(topicId, EVENTS.flashcardsGenerationRequested, `Requested generations of flashcards for topic ${topicCode} - section ${sectionCode}`, {
+                    topicCode: topicCode,
+                    topicId: topicId,
+                    sectionCode: sectionCode,
+                    user: this.user,
+                    flashcardsType: "graph"
+                });
+
+            }
+
+
+        } catch (error) {
+
+            this.logger.compute(this.cid, `${error}`, "error")
+
+            if (error instanceof ValidationError || error instanceof TotoRuntimeError) {
+                throw error;
+            }
+            else {
+                console.log(error);
+                throw error;
+            }
+
+        }
+        finally {
+        }
+
     }
 
     async generateFlashcards(topicCode: string, topicId: string) {
@@ -138,9 +197,10 @@ export class FlashcardsGenerator {
 
             // 5. Publish an event that flashcards have been generated for the topic
             await new EventPublisher(this.execContext, "tometopics").publishEvent(topicId, EVENTS.flashcardsCreated, `Flashcards generated for topic ${topicCode}`, new FlashcardsCreatedEvent(
-                getFlashcardsGeneration(),
+                "legacy",
                 topicCode,
                 topicId,
+                "", "", 
                 generatedFlashcards.length,
             ))
 
