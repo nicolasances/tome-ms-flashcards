@@ -54,7 +54,16 @@ export class FlashcardsGenerationOrchestrator {
 
         this.logger.compute(this.cid, `Starting the process to generate Flashcards for topic ${topicCode}`)
 
+        let client;
         try {
+
+            client = await this.config.getMongoClient();
+            const db = client.db(this.config.getDBName());
+
+            // 1. Delete all flashcards for the topic and user
+            const deletedCount = await new FlashCardsStore(db, this.execContext).deleteAllFlashcards(topicId, this.user);
+
+            this.logger.compute(this.cid, `Deleted ${deletedCount} flashcards for topic ${topicCode} and user ${this.user}`)
 
             // 1. Retrieve from GCS all the files related to the specified topic (topic code)
             // 1.1. Get the bucket
@@ -99,6 +108,7 @@ export class FlashcardsGenerationOrchestrator {
 
         }
         finally {
+            if (client) client.close();
         }
 
     }
