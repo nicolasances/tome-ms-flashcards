@@ -43,8 +43,11 @@ export class HistoricalGraphGenerator {
             - Track whether the link between two events is causal or purely chronological.
             - Separately extract all facts (i.e. interesting facts, concepts, things that are not events) from the text. 
             - Track reasons (causes) for events, if they are mentioned in the text.
-
             - Events should be well described, but not too long. Aim for 1-3 sentences per event.
+            - In the event description, use the following markup: 
+                - Wrap name of people in a tag <name>...</name>
+                - Wrap names of places in a tag <place>...</place>
+                - Wrap the most important words (max 2) in a tag <important>...</important>
 
             **Constraints:**
             - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
