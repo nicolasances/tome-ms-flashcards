@@ -48,7 +48,12 @@ export class HistoricalGraphGenerator {
                 - Wrap name of people in a tag <name>...</name>
                 - Wrap names of places in a tag <place>...</place>
                 - Wrap the most important words (max 2) in a tag <important>...</important>
-            - For each event, generate a question on that event, with multiple choice answers (only one correct answer, and never use "all of the above" as a choice).
+            - For each event, generate a question on the event, with multiple choice answers. Follow these rules: 
+                1. If the event is a consequence of a previous event, ask what happened as a consequence of the previous event.
+                2. If the event is not a consequence of a previous event, ask what happened in the event.
+                1. Avoid questions on dates and names
+                2. Max 4 answers, only one is correct
+                3. Don't use "all of the above" or "none of the above" as an answer
 
             **Constraints:**
             - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
@@ -69,7 +74,7 @@ export class HistoricalGraphGenerator {
                     firstEvent: {
                         "code": "a unique short code for the event",
                         "event": "THE EVENT OR FACT DESCRIPTION HERE",
-                        "question": "A question about the event, with multiple choice answers",
+                        "question": "A question about the event, following the rules stated above",
                         "answers": ["answer 1", "answer 2", "answer 3", "answer 4"], // 4 answers, only one is correct
                         "correctAnswerIndex": 0, // index of the correct answer in the answers array
                         "reason": "the reason for the event, if explicitly mentioned in the text",
