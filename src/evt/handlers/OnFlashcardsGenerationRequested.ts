@@ -42,6 +42,8 @@ export class OnFlashcardsGenerationRequested {
         // 2. Generate flashcards
         const flashcards = await generator.generateFlashcards(msg.data.corpus);
 
+        logger.compute(cid, `Generated ${flashcards.length} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
+
         // 3. Save the flashcards
         let client;
         try {
