@@ -48,6 +48,7 @@ export class HistoricalGraphGenerator {
                 - Wrap name of people in a tag <name>...</name>
                 - Wrap names of places in a tag <place>...</place>
                 - Wrap the most important words (max 2) in a tag <important>...</important>
+            - For each event, generate a question on that event, with multiple choice answers (only one correct answer, and never use "all of the above" as a choice).
 
             **Constraints:**
             - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
@@ -68,6 +69,9 @@ export class HistoricalGraphGenerator {
                     firstEvent: {
                         "code": "a unique short code for the event",
                         "event": "THE EVENT OR FACT DESCRIPTION HERE",
+                        "question": "A question about the event, with multiple choice answers",
+                        "answers": ["answer 1", "answer 2", "answer 3", "answer 4"], // 4 answers, only one is correct
+                        "correctAnswerIndex": 0, // index of the correct answer in the answers array
                         "reason": "the reason for the event, if explicitly mentioned in the text",
                         "date":  "the date as a string formatted according to momentjs", // or null if no date is available in the text. THE DATE MUST BE IN THE TEXT. If the date is a year just return the year as a string. 
                         "dateFormat": specifies a momentjs date format for the date, 
