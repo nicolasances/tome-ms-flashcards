@@ -94,7 +94,67 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
             return [];
         }
 
-        return [HistoricalGraphFC.fromLLMResponse(llmResponse, this.topicId, this.topicCode, this.sectionCode, this.user)];
+        const graph = HistoricalGraphFC.fromLLMResponse(llmResponse, this.topicId, this.topicCode, this.sectionCode, this.user)
+
+        // 2. Step two
+        const promptStep2 = `
+            You are an assistant that creates historical graphs from a historical text. 
+
+            **Your task:**
+            Given the follow text and graph, you will build one question for each event in the graph. 
+
+            **Instructions:**
+            - Read the text and analyze the graph carefully. 
+            - For each event in the graph, generate a question on the event, with multiple choice answers. Follow these rules: 
+                1. If the event is a consequence of a previous event, ask what happened as a consequence of the previous event.
+                2. If the event is not a consequence of a previous event, ask what happened in the event.
+                1. Avoid questions on dates and names
+                2. Max 4 answers, only one is correct
+                3. Don't use "all of the above" or "none of the above" as an answer
+
+            **Constraints:**
+            - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
+            - Do not translate centuries into a date. E.g. "starts in the 10th century" should not be translated into "900".
+            - Do not make up events or facts that are not in the text.
+            - STRICTLY restrict yourself to the text and graph provided.
+
+            **The text**
+            ----
+            ${corpus}
+            ----
+
+            **The graph**
+            ----
+            ${JSON.stringify(graph)}
+            ----
+
+            **Output format (JSON array):**
+            [ 
+                {
+                    "eventCode": "the code of the event this question is about",
+                    "question": "The question about the event",
+                    "answers": ["answer 1", "answer 2", "answer 3", "answer 4"], // 4 answers, only one is correct
+                    "correctAnswerIndex": 0 // index of the correct answer in the answers array
+                }
+            ]
+            RETURN null IF THE TEXT DOES NOT CONTAIN A SEQUENCE OF HISTORICAL EVENTS.
+            FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
+        `
+
+        const llmResponsePart2 = await new LLMAPI(this.execContext, this.authHeader).prompt(promptStep2, "json");
+
+        if (!llmResponsePart2 || !llmResponsePart2.value || !Array.isArray(llmResponsePart2.value)) {
+            return [];
+        }
+
+        graph.addQuestions(llmResponsePart2.value.map((q: any) => ({
+            eventCode: q.eventCode,
+            question: q.question,
+            answers: q.answers,
+            correctAnswerIndex: q.correctAnswerIndex
+        })));
+
+        return [graph];
     }
 
 }

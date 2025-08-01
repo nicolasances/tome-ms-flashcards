@@ -63,6 +63,32 @@ export class HistoricalGraphFC implements Card {
         }
     }
 
+    /**
+     * Adds questions to the flashcard. 
+     * Each question is added to the event that it belongs to, based on the event code.
+     * There can be only one question per event.
+     * @param questions The questions to add.
+     */
+    addQuestions(questions: Question[]): void {
+        if (!this.graph || !this.graph.eventGraph || !this.graph.eventGraph.firstEvent) {
+            throw new Error("Cannot add questions to a flashcard without an event graph.");
+        }
+
+        const addQuestionToEvent = (event: EventNode) => {
+            const question = questions.find(q => q.eventCode === event.code);
+            if (question) {
+                event.question = question.question;
+                event.answers = question.answers;
+                event.correctAnswerIndex = question.correctAnswerIndex;
+            }
+            if (event.nextEvent) {
+                addQuestionToEvent(event.nextEvent);
+            }
+        };
+
+        addQuestionToEvent(this.graph.eventGraph.firstEvent);
+    }
+
     static fromLLMResponse(llmResponse: LLMPromptResponse, topicId: string, topicCode: string, sectionCode: string, user: string): HistoricalGraphFC {
 
         return new HistoricalGraphFC(
@@ -135,4 +161,11 @@ interface Fact {
     fact: string; 
     eventCode: string | null; // Code of the event this fact is connected to, or null if not related to any event
     linkReason: string | null; // Reason for the link to the specified event, if applicable
+}
+
+interface Question {
+    eventCode: string; // Code of the event this question is related to
+    question: string; 
+    answers: string[]; // Array of answers, only one is correct
+    correctAnswerIndex: number; // Index of the correct answer in the answers array
 }

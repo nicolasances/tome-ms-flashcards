@@ -83,6 +83,7 @@ export class FlashcardsGenerationOrchestrator {
                 const sectionCode = file.name.split('/').pop()?.replace('.txt', '');
 
                 // 2.2 Send all pub sub messages
+                // 2.2.1. Graph generation
                 await new EventPublisher(this.execContext, "tomeflashcards").publishEvent(topicId, EVENTS.flashcardsGenerationRequested, `Requested generations of flashcards for topic ${topicCode} - section ${sectionCode}`, {
                     topicCode: topicCode,
                     topicId: topicId,
