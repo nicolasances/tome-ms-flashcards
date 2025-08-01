@@ -2,6 +2,7 @@ import { Request } from "express";
 import { MultipleOptionsFC } from "./model/MultipleOptionsFC";
 import { SectionTimelineFC } from "./model/SectionTimelineFC";
 import { DateFC } from "./model/DateFC";
+import { HistoricalGraphFC } from "./model/HistoricalGraphFC";
 
 export interface Card {
 
@@ -33,6 +34,7 @@ export class FlashcardFactory {
         if (bson.type == 'options') return MultipleOptionsFC.fromBSON(bson);
         else if (bson.type == 'timeline') return SectionTimelineFC.fromBSON(bson);
         else if (bson.type == 'date') return DateFC.fromBSON(bson);
+        else if (bson.type == 'graph') return HistoricalGraphFC.fromBSON(bson);
 
         throw new Error(`Card with type ${bson.type} are not supported`)
     }
