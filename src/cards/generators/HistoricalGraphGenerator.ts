@@ -3,6 +3,7 @@ import { LLMAPI, LLMPromptResponse } from "../../api/LLMAPI";
 import { Request } from "express";
 import { HistoricalGraphFC } from "../model/HistoricalGraphFC";
 import { FlashcardsGenerator } from "./IFlashcardsGenerator";
+import { log } from "console";
 
 export class HistoricalGraphGenerator implements FlashcardsGenerator {
 
@@ -27,6 +28,9 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
     }
 
     async generateFlashcards(corpus: string): Promise<HistoricalGraphFC[]> {
+
+        const logger = this.execContext.logger;
+        const cid = this.execContext.cid;
 
         const prompt = `
             You are an assistant that creates historical graphs from a historical text. 
@@ -90,6 +94,8 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
 
         const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
 
+        logger.compute(cid, `LLM response for historical graph generation: ${JSON.stringify(llmResponse)}`);
+
         if (!llmResponse || !llmResponse.value || !llmResponse.value.eventGraph) {
             return [];
         }
@@ -142,6 +148,8 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
         `
 
         const llmResponsePart2 = await new LLMAPI(this.execContext, this.authHeader).prompt(promptStep2, "json");
+
+        logger.compute(cid, `LLM response for historical graph questions generation: ${JSON.stringify(llmResponsePart2)}`);
 
         if (!llmResponsePart2 || !llmResponsePart2.value || !Array.isArray(llmResponsePart2.value)) {
             return [];

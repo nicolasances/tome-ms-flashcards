@@ -63,6 +63,8 @@ export class OnFlashcardsGenerationRequested {
 
         logger.compute(cid, `Generated ${flashcards.length} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
 
+        if (!flashcards || flashcards.length === 0) return { consumed: true, message: "No flashcards generated" };
+
         // 4. Save the flashcards
         let client;
         try {
