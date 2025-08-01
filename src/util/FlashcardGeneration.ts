@@ -3,5 +3,5 @@ import { HistoricalGraphGenerator } from "../cards/generators/HistoricalGraphGen
 import { MultipleOptionsFCGenerator } from "../cards/generators/MultipleOptionsFCGenerator";
 
 export function getFlashcardsGeneration() {
-    return `${HistoricalGraphGenerator.generation()}-${MultipleOptionsFCGenerator.generation()}-${DateFCGenerator.generation()}`;
+    return `legacy`;
 }
