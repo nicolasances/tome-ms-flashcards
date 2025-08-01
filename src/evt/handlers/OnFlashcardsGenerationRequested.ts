@@ -8,15 +8,19 @@ import { EventPublisher, EVENTS } from "../EventPublisher";
 import { FlashcardsCreatedEvent } from "../model/FlashcardsCreatedEvent";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
+import { Storage } from "@google-cloud/storage";
 
 export class OnFlashcardsGenerationRequested {
 
     execContext: ExecutionContext;
     config: ControllerConfig;
+    bucketName: string;
+    kbBaseFolder: string = "kb"
 
     constructor(execContext: ExecutionContext) {
         this.execContext = execContext;
         this.config = execContext.config as ControllerConfig;
+        this.bucketName = `${process.env['GCP_PID']}-tome-bucket`;
     }
 
     async do(req: Request) {
@@ -39,12 +43,27 @@ export class OnFlashcardsGenerationRequested {
         // 1. Find the right generator 
         const generator = FlashcardsGeneratorFactory.getGenerator(this.execContext, req, msg.data.user, topicCode, topicId, sectionCode, flashcardsType)
 
-        // 2. Generate flashcards
-        const flashcards = await generator.generateFlashcards(msg.data.corpus);
+        // 2. Read the corpus from GCS
+        // 2.1. Get the bucket
+        const storage = new Storage();
+        const bucket = storage.bucket(this.bucketName);
+
+        // 2.2 Get the specific file corresponding to this topic and section
+        const fileName = `${this.kbBaseFolder}/${topicCode}/${sectionCode}.txt`;
+        const file = bucket.file(fileName);
+
+        // 2.3 Read the file content
+        const [fileContent] = await file.download();
+        const corpus = fileContent.toString('utf-8');
+
+        logger.compute(cid, `Read corpus for topic ${topicCode} - ${sectionCode} from GCS`);
+
+        // 3. Generate flashcards
+        const flashcards = await generator.generateFlashcards(corpus);
 
         logger.compute(cid, `Generated ${flashcards.length} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
 
-        // 3. Save the flashcards
+        // 4. Save the flashcards
         let client;
         try {
 
