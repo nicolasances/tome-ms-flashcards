@@ -125,6 +125,9 @@ interface EventNode {
     date: string | null; // Date in a specific format
     dateFormat: string | null; // e.g. "YYYY-MM-DD", "MM-DD", "DD-MM"
     nextEvent: EventNode | null;
+    question: string; 
+    answers: string[]; // Array of answers, only one is correct
+    correctAnswerIndex: number; // Index of the correct answer in the answers array
     link?: "causal" | "chronological"; // Link type with the previous event in the graph, if applicable
 }
 
