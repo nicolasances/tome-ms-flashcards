@@ -8,15 +8,13 @@ import { ControllerConfig } from "../Config";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 import { MultipleOptionsFCGenerator } from "./generators/MultipleOptionsFCGenerator";
-import { SectionTimelineFCGenerator } from "./generators/SectionTimelineFCGenerator";
-import { SectionTimelineFC } from "./model/SectionTimelineFC";
 import { EventPublisher, EVENTS } from "../evt/EventPublisher";
 import { FlashcardsCreatedEvent } from "../evt/model/FlashcardsCreatedEvent";
-import { getFlashcardsGeneration } from "../util/FlashcardGeneration";
 import { DateFC } from "./model/DateFC";
 import { DateFCGenerator } from "./generators/DateFCGenerator";
 import { HistoricalGraphFC } from "./model/HistoricalGraphFC";
 import { HistoricalGraphGenerator } from "./generators/HistoricalGraphGenerator";
+import { FlashcardsGenerationRequestedEvent } from "../evt/model/FlashcardsGenerationRequestedEvent";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -83,14 +81,16 @@ export class FlashcardsGenerationOrchestrator {
                 const sectionCode = file.name.split('/').pop()?.replace('.txt', '');
 
                 // 2.2 Send all pub sub messages
+                const events = [
+                    new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, "graph"), 
+                    new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, "options"),
+                    new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, "date")
+                ];
+
                 // 2.2.1. Graph generation
-                await new EventPublisher(this.execContext, "tomeflashcards").publishEvent(topicId, EVENTS.flashcardsGenerationRequested, `Requested generations of flashcards for topic ${topicCode} - section ${sectionCode}`, {
-                    topicCode: topicCode,
-                    topicId: topicId,
-                    sectionCode: sectionCode,
-                    user: this.user,
-                    flashcardsType: "graph"
-                });
+                for (const event of events) {
+                    await new EventPublisher(this.execContext, "tomeflashcards").publishEvent(topicId, EVENTS.flashcardsGenerationRequested, `Requested generations of flashcards type [${event.flashcardsType}] for topic ${topicCode} - section ${sectionCode}`, event);
+                }
 
             }
 
