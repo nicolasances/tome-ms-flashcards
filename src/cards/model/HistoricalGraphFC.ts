@@ -110,6 +110,7 @@ export class HistoricalGraphFC implements Card {
             bson.topicId,
             bson.topicCode,
             bson.sectionCode,
+            bson.sectionIndex,
             bson.user,
             bson.sectionTitle,
             bson.sectionShortTitle,
