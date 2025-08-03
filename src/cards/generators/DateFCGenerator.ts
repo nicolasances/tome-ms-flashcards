@@ -11,14 +11,16 @@ export class DateFCGenerator implements FlashcardsGenerator {
     user: string;
     topicCode: string;
     sectionCode: string;
+    sectionIndex: number;
     topicId: string;
 
-    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string) {
+    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string, sectionIndex: number) {
         this.execContext = execContext;
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization']);
         this.user = user;
         this.topicCode = topicCode;
         this.sectionCode = sectionCode;
+        this.sectionIndex = sectionIndex;
         this.topicId = topicId;
     }
 
@@ -67,7 +69,7 @@ export class DateFCGenerator implements FlashcardsGenerator {
             
             (flashcard: { question: string; correctYear: number; }) => {
 
-                const fc = new DateFC(this.user, this.topicId, this.topicCode, this.sectionCode, llmResponse.value.title, llmResponse.value.shortTitle, flashcard.question, flashcard.correctYear);
+                const fc = new DateFC(this.user, this.topicId, this.topicCode, this.sectionCode, this.sectionIndex, llmResponse.value.title, llmResponse.value.shortTitle, flashcard.question, flashcard.correctYear);
 
                 return fc;
             }

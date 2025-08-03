@@ -11,6 +11,7 @@ export interface Card {
     topicId: string
     topicCode: string;
     sectionCode: string;
+    sectionIndex: number;   // 0-based index of the section in the topic to manage proper ordering
     
     user: string;
 

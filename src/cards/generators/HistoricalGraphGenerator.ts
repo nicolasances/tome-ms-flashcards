@@ -12,13 +12,15 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
     topicCode: string;
     topicId: string;
     sectionCode: string;
+    sectionIndex: number;
 
-    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string) {
+    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string, sectionIndex: number) {
         this.execContext = execContext;
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization']);
         this.user = user;
         this.topicCode = topicCode;
         this.sectionCode = sectionCode;
+        this.sectionIndex = sectionIndex;
         this.topicId = topicId;
     }
 
@@ -100,7 +102,7 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
             return [];
         }
 
-        const graph = HistoricalGraphFC.fromLLMResponse(llmResponse, this.topicId, this.topicCode, this.sectionCode, this.user)
+        const graph = HistoricalGraphFC.fromLLMResponse(llmResponse, this.topicId, this.topicCode, this.sectionCode, this.sectionIndex, this.user)
 
         // 2. Step two
         const promptStep2 = `

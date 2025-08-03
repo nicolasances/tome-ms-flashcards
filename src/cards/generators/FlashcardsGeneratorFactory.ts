@@ -11,14 +11,17 @@ export class FlashcardsGeneratorFactory {
 
     static getGenerator(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string, flashcardsType: string): FlashcardsGenerator {
 
+        // Extract the section index from the section code. Section codes are formatted as {index}-{code}
+        const sectionIndex = parseInt(sectionCode.split('-')[0]);
+
         if (flashcardsType == 'options') {
-            return new MultipleOptionsFCGenerator(execContext, request, user, topicCode, topicId, sectionCode);
+            return new MultipleOptionsFCGenerator(execContext, request, user, topicCode, topicId, sectionCode, sectionIndex);
         } else if (flashcardsType == 'timeline') {
-            return new SectionTimelineFCGenerator(execContext, request, user, topicCode, topicId, sectionCode);
+            return new SectionTimelineFCGenerator(execContext, request, user, topicCode, topicId, sectionCode, sectionIndex);
         } else if (flashcardsType == 'date') {
-            return new DateFCGenerator(execContext, request, user, topicCode, topicId, sectionCode);
+            return new DateFCGenerator(execContext, request, user, topicCode, topicId, sectionCode, sectionIndex);
         } else if (flashcardsType == 'graph') {
-            return new HistoricalGraphGenerator(execContext, request, user, topicCode, topicId, sectionCode);
+            return new HistoricalGraphGenerator(execContext, request, user, topicCode, topicId, sectionCode, sectionIndex);
         }
 
         throw new Error(`Flashcards type ${flashcardsType} is not supported`);

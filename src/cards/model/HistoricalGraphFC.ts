@@ -10,6 +10,7 @@ export class HistoricalGraphFC implements Card {
     topicId: string;
     topicCode: string;
     sectionCode: string;
+    sectionIndex: number;   // 0-based index of the section in the topic to manage proper ordering
     user: string;
     
     sectionTitle: string; 
@@ -26,6 +27,7 @@ export class HistoricalGraphFC implements Card {
         topicId: string,
         topicCode: string,
         sectionCode: string,
+        sectionIndex: number,
         user: string,
         sectionTitle: string,
         sectionShortTitle: string,
@@ -37,6 +39,7 @@ export class HistoricalGraphFC implements Card {
         this.topicId = topicId;
         this.topicCode = topicCode;
         this.sectionCode = sectionCode;
+        this.sectionIndex = sectionIndex;
         this.user = user;
         this.sectionTitle = sectionTitle;
         this.sectionShortTitle = sectionShortTitle;
@@ -55,6 +58,7 @@ export class HistoricalGraphFC implements Card {
             topicId: this.topicId,
             topicCode: this.topicCode,
             sectionCode: this.sectionCode,
+            sectionIndex: this.sectionIndex,
             sectionTitle: this.sectionTitle,
             sectionShortTitle: this.sectionShortTitle,
             graph: this.graph,
@@ -89,10 +93,10 @@ export class HistoricalGraphFC implements Card {
         addQuestionToEvent(this.graph.eventGraph.firstEvent);
     }
 
-    static fromLLMResponse(llmResponse: LLMPromptResponse, topicId: string, topicCode: string, sectionCode: string, user: string): HistoricalGraphFC {
+    static fromLLMResponse(llmResponse: LLMPromptResponse, topicId: string, topicCode: string, sectionCode: string, sectionIndex: number, user: string): HistoricalGraphFC {
 
         return new HistoricalGraphFC(
-            topicId, topicCode, sectionCode, user,
+            topicId, topicCode, sectionCode, sectionIndex, user,
             llmResponse.value.title,
             llmResponse.value.shortTitle,
             HistoricalGraph.fromLLMResponse(llmResponse),

@@ -12,13 +12,15 @@ export class SectionTimelineFCGenerator implements FlashcardsGenerator {
     topicCode: string;
     topicId: string;
     sectionCode: string;
+    sectionIndex: number;
 
-    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string) {
+    constructor(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string, sectionIndex: number) {
         this.execContext = execContext;
         this.authHeader = String(request.headers['authorization'] ?? request.headers['Authorization']);
         this.user = user;
         this.topicCode = topicCode;
         this.sectionCode = sectionCode;
+        this.sectionIndex = sectionIndex;
         this.topicId = topicId;
     }
 
@@ -79,7 +81,7 @@ export class SectionTimelineFCGenerator implements FlashcardsGenerator {
         // If there is no timelien to generate
         if (llmResponse.value == null) return [];
 
-        const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, this.sectionCode, llmResponse.value.events, llmResponse.value.title, llmResponse.value.shortTitle);
+        const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, this.sectionCode, this.sectionIndex, llmResponse.value.events, llmResponse.value.title, llmResponse.value.shortTitle);
 
         // Shuffle the events
         card.shuffleEvents();

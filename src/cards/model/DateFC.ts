@@ -11,6 +11,7 @@ export class DateFC implements Card {
     sectionCode: string;
     sectionTitle: string;
     sectionShortTitle: string;
+    sectionIndex: number;   // 0-based index of the section in the topic to manage proper ordering
 
     question: string;
     correctYear: number;
@@ -21,6 +22,7 @@ export class DateFC implements Card {
         topicId: string,
         topicCode: string,
         sectionCode: string,
+        sectionIndex: number,
         sectionTitle: string,
         sectionShortTitle: string,
         question: string,
@@ -30,6 +32,7 @@ export class DateFC implements Card {
         this.topicId = topicId;
         this.topicCode = topicCode;
         this.sectionCode = sectionCode;
+        this.sectionIndex = sectionIndex;
         this.sectionTitle = sectionTitle;
         this.sectionShortTitle = sectionShortTitle;
         this.question = question;
@@ -43,6 +46,7 @@ export class DateFC implements Card {
             topicId: this.topicId, 
             topicCode: this.topicCode, 
             sectionCode: this.sectionCode, 
+            sectionIndex: this.sectionIndex,
             sectionTitle: this.sectionTitle, 
             sectionShortTitle: this.sectionShortTitle, 
             question: this.question, 
@@ -52,7 +56,7 @@ export class DateFC implements Card {
 
     static fromBSON(bson: WithId<any>): DateFC {
 
-        const card = new DateFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.sectionTitle, bson.sectionShortTitle, bson.question, bson.correctYear);
+        const card = new DateFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.sectionIndex, bson.sectionTitle, bson.sectionShortTitle, bson.question, bson.correctYear);
         card.id = bson._id.toHexString()
 
         return card
