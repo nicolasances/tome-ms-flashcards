@@ -3,7 +3,6 @@ import { LLMAPI, LLMPromptResponse } from "../../api/LLMAPI";
 import { Request } from "express";
 import { HistoricalGraphFC } from "../model/HistoricalGraphFC";
 import { FlashcardsGenerator } from "./IFlashcardsGenerator";
-import { log } from "console";
 
 export class HistoricalGraphGenerator implements FlashcardsGenerator {
 
@@ -54,6 +53,7 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
 
             **Constraints:**
             - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
+            - The Event description should not contain dates. 
             - Do not translate centuries into a date. E.g. "starts in the 10th century" should not be translated into "900".
             - Do not make up events or facts that are not in the text.
             - STRICTLY restrict yourself to the text provided.
