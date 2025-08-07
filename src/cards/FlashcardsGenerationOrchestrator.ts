@@ -15,6 +15,7 @@ import { DateFCGenerator } from "./generators/DateFCGenerator";
 import { HistoricalGraphFC } from "./model/HistoricalGraphFC";
 import { HistoricalGraphGenerator } from "./generators/HistoricalGraphGenerator";
 import { FlashcardsGenerationRequestedEvent } from "../evt/model/FlashcardsGenerationRequestedEvent";
+import { GENERATED_FLASHCARD_TYPES } from "../model/FlashcardTypes";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -80,12 +81,11 @@ export class FlashcardsGenerationOrchestrator {
                 // 2.1 Extract the section code from the file name (the file name is expected to be in the format {sectionCode}.txt)
                 const sectionCode = file.name.split('/').pop()?.replace('.txt', '');
 
-                // 2.2 Send all pub sub messages
-                const events = [
-                    new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, "graph"), 
-                    new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, "options"),
-                    new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, "date")
-                ];
+                // 2.2 Send all pub sub messages for every flashcard type that needs to be generated
+                const events = []; 
+                for (const flashcardType of GENERATED_FLASHCARD_TYPES) {
+                    events.push(new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, flashcardType));
+                }
 
                 // 2.2.1. Graph generation
                 for (const event of events) {
