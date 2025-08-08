@@ -85,7 +85,6 @@ export class OnFlashcardsGenerationRequested {
 
             // 5. Publish an event that flashcards have been generated for the topic
             await new EventPublisher(this.execContext, "tometopics").publishEvent(topicId, EVENTS.flashcardsCreated, `Flashcards generated for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`, new FlashcardsCreatedEvent(
-                generator.generation(),
                 topicCode,
                 topicId,
                 sectionCode,

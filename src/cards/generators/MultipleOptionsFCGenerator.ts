@@ -25,7 +25,7 @@ export class MultipleOptionsFCGenerator implements FlashcardsGenerator {
 
     }
 
-    generation() {return "o3"}
+    static generation() {return "o3"}
 
     async generateFlashcards(corpus: string): Promise<MultipleOptionsFC[]> {
 

@@ -24,9 +24,7 @@ export class SectionTimelineFCGenerator implements FlashcardsGenerator {
         this.topicId = topicId;
     }
 
-    generation() {
-        return "t6"
-    }
+    static generation() {return "t6"}
 
     async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
 

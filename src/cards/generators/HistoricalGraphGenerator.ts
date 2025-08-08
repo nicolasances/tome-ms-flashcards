@@ -24,8 +24,8 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
         this.topicId = topicId;
     }
 
-    generation() {
-        return "gr1"
+    static generation() {
+        return "g2"
     }
 
     async generateFlashcards(corpus: string): Promise<HistoricalGraphFC[]> {

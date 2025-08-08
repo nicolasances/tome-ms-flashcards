@@ -6,6 +6,7 @@ import { GetFlashcards } from "./dlg/GetFlashcards";
 import { GenerateFlashcards } from "./dlg/GenerateFlashcards";
 import { OnFlashcardsEvent } from "./evt/OnFlashcardsEvent";
 import { GetFlashcardTypes } from "./dlg/GetFlashcardTypes";
+import { GetLatestFlashcardsGeneration } from "./dlg/GetLatestFlashcardsGeneration";
 
 const api = new TotoAPIController("tome-ms-flashcards", new ControllerConfig())
 
@@ -15,6 +16,7 @@ api.path('GET', '/flashcards', new GetFlashcards())
 api.path('GET', '/flashcardtypes', new GetFlashcardTypes());
 
 api.path('POST', '/corpus/flashcards', new GenerateFlashcards());
+api.path('GET', '/generation/latest', new GetLatestFlashcardsGeneration());
 
 api.path('POST', '/events/flashcards', new OnFlashcardsEvent())
 api.path('POST', '/events/topic', new OnTopicEvent())

@@ -24,7 +24,7 @@ export class DateFCGenerator implements FlashcardsGenerator {
         this.topicId = topicId;
     }
 
-    generation() {return "d1"}
+    static generation() {return "d1"}
 
     async generateFlashcards(corpus: string): Promise<DateFC[]> {
 

@@ -4,6 +4,4 @@ export interface FlashcardsGenerator {
     
     generateFlashcards(corpus: string): Promise<Card[]>;
 
-    generation(): string;
-    
 }

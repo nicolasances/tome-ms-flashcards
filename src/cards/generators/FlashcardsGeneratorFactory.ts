@@ -6,8 +6,20 @@ import { MultipleOptionsFCGenerator } from "./MultipleOptionsFCGenerator";
 import { SectionTimelineFCGenerator } from "./SectionTimelineFCGenerator";
 import { Request } from "express";
 import { FlashcardsGenerator } from "./IFlashcardsGenerator";
+import { GENERATED_FLASHCARD_TYPES } from "../../model/FlashcardTypes";
 
 export class FlashcardsGeneratorFactory {
+
+    static getLatestGenerationCode(): string {
+        return GENERATED_FLASHCARD_TYPES.map(type => {
+            if (type === 'graph') return HistoricalGraphGenerator.generation(); 
+            else if (type === 'date') return DateFCGenerator.generation();
+            else if (type === 'options') return MultipleOptionsFCGenerator.generation();
+            else if (type === 'timeline') return SectionTimelineFCGenerator.generation();
+            
+            return "";
+        }).join('.');
+    }
 
     static getGenerator(execContext: ExecutionContext, request: Request, user: string, topicCode: string, topicId: string, sectionCode: string, flashcardsType: string): FlashcardsGenerator {
 
