@@ -65,7 +65,9 @@ export class FlashcardsGenerationOrchestrator {
             const trackingStore = new TrackingStore(db, this.execContext)
 
             // 0. Delete all tracking events
-            await trackingStore.deleteTrackingEvents(topicId);
+            const deleteedTrackingEvents = await trackingStore.deleteTrackingEvents(topicId);
+
+            this.logger.compute(this.cid, `Deleted ${deleteedTrackingEvents} tracking events for topic ${topicCode}`);
 
             // 1. Delete all flashcards for the topic and user
             const deletedCount = await new FlashCardsStore(db, this.execContext).deleteAllFlashcards(topicId, this.user);
