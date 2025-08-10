@@ -80,8 +80,6 @@ export class OnFlashcardsGenerationRequested {
 
             logger.compute(cid, `Generated ${flashcards.length} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
 
-            if (!flashcards || flashcards.length === 0) return { consumed: true, message: "No flashcards generated" };
-
             // 3. Save all the generated flashcards
             const fcStore = new FlashCardsStore(db, this.execContext);
 
@@ -89,11 +87,14 @@ export class OnFlashcardsGenerationRequested {
 
             logger.compute(cid, `Deleted ${deletedCount} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType} before saving new ones`)
 
-            const insertedCount = await fcStore.saveFlashCards(flashcards);
+            if (flashcards && flashcards.length > 0) {
 
-            await tracker.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, flashcardsType, "fcSaved", cid, llmRequestTrackingId));
+                const insertedCount = await fcStore.saveFlashCards(flashcards);
 
-            logger.compute(cid, `Persisted ${insertedCount} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
+                await tracker.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, flashcardsType, "fcSaved", cid, llmRequestTrackingId));
+
+                logger.compute(cid, `Persisted ${insertedCount} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
+            }
 
             // 5. Publish an event that flashcards have been generated for the topic
             await new EventPublisher(this.execContext, "tometopics").publishEvent(topicId, EVENTS.flashcardsCreated, `Flashcards generated for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`, new FlashcardsCreatedEvent(

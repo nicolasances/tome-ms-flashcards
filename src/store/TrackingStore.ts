@@ -32,5 +32,16 @@ export class TrackingStore {
 
         return events.map(event => FCGenerationLogEntry.fromBSON(event));
     }
-}
+
+    /**
+     * Delete tracking events by topic ID
+     * @param topicId 
+     * @returns 
+     */
+    async deleteTrackingEvents(topicId: string): Promise<number> {
+
+        const result = await this.db.collection(collections.tracking).deleteMany({ topicId });
+
+        return result.deletedCount;
+    }
 
