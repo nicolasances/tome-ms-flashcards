@@ -26,6 +26,18 @@ export class FCGenerationLogEntry {
         this.timestamp = moment().tz("Europe/Rome").format("YYYY.MM.DD HH:mm:ss");
     }
 
+    static fromBSON(obj: any): FCGenerationLogEntry {
+        return new FCGenerationLogEntry(
+            obj.topicId,
+            obj.topicCode,
+            obj.sectionCode,
+            obj.flashcardType,
+            obj.eventType,
+            obj.cid,
+            obj.trackingId
+        );
+    }
+
     toBSON() {
         return {
             topicId: this.topicId,

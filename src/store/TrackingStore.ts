@@ -21,6 +21,16 @@ export class TrackingStore {
         return result.insertedId.toHexString()
     }
 
+    /**
+     * Get tracking events by topic ID
+     * @param topicId 
+     * @returns 
+     */
+    async getTrackingEventsByTopicId(topicId: string): Promise<FCGenerationLogEntry[]> {
 
+        const events = await this.db.collection(collections.tracking).find({ topicId }).toArray();
+
+        return events.map(event => FCGenerationLogEntry.fromBSON(event));
+    }
 }
 
