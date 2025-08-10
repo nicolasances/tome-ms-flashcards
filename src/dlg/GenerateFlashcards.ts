@@ -41,10 +41,10 @@ export class GenerateFlashcards implements TotoDelegate {
 
         logger.compute(cid, `[GenerateFlashcards] Generating flashcards for topic ${topicCode} with type ${flashcardType}.`);
 
-        if (flashcardType == 'options') return await new MultipleOptionsFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus);
-        else if (flashcardType == 'timeline') return await new SectionTimelineFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus);
-        else if (flashcardType == 'date') return await new DateFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus);
-        else if (flashcardType == 'graph') return await new HistoricalGraphGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus);
+        if (flashcardType == 'options') return await new MultipleOptionsFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus, "");
+        else if (flashcardType == 'timeline') return await new SectionTimelineFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus, "");
+        else if (flashcardType == 'date') return await new DateFCGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus, "");
+        else if (flashcardType == 'graph') return await new HistoricalGraphGenerator(execContext, req, userContext.email, body.topicCode, 'fakeid', corpusCode, 0).generateFlashcards(corpus, "");
         else throw new ValidationError(400, `Flashcard type ${flashcardType} is not supported.`);
 
     }

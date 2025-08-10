@@ -16,6 +16,9 @@ import { HistoricalGraphFC } from "./model/HistoricalGraphFC";
 import { HistoricalGraphGenerator } from "./generators/HistoricalGraphGenerator";
 import { FlashcardsGenerationRequestedEvent } from "../evt/model/FlashcardsGenerationRequestedEvent";
 import { GENERATED_FLASHCARD_TYPES } from "../model/FlashcardTypes";
+import { TrackingStore } from "../store/TrackingStore";
+import { FCGenerationLogEntry } from "../model/TrackingEvent";
+import { generateTrackingId } from "../util/TrackingId";
 
 /**
  * This class is responsible for generating flashcards for a given topic 
@@ -59,6 +62,8 @@ export class FlashcardsGenerationOrchestrator {
             client = await this.config.getMongoClient();
             const db = client.db(this.config.getDBName());
 
+            const trackingStore = new TrackingStore(db, this.execContext)
+
             // 1. Delete all flashcards for the topic and user
             const deletedCount = await new FlashCardsStore(db, this.execContext).deleteAllFlashcards(topicId, this.user);
 
@@ -82,14 +87,18 @@ export class FlashcardsGenerationOrchestrator {
                 const sectionCode = file.name.split('/').pop()?.replace('.txt', '');
 
                 // 2.2 Send all pub sub messages for every flashcard type that needs to be generated
-                const events = []; 
+                const events = [];
                 for (const flashcardType of GENERATED_FLASHCARD_TYPES) {
                     events.push(new FlashcardsGenerationRequestedEvent(topicCode, topicId, sectionCode!, this.user, flashcardType));
                 }
 
-                // 2.2.1. Graph generation
+                // 2.2.1. Event triggering
                 for (const event of events) {
+
                     await new EventPublisher(this.execContext, "tomeflashcards").publishEvent(topicId, EVENTS.flashcardsGenerationRequested, `Requested generations of flashcards type [${event.flashcardsType}] for topic ${topicCode} - section ${sectionCode}`, event);
+
+                    await trackingStore.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, event.flashcardsType, "genRequestedEventSent", this.cid!, generateTrackingId()));
+                    
                 }
 
             }

@@ -28,7 +28,7 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
         return "g2"
     }
 
-    async generateFlashcards(corpus: string): Promise<HistoricalGraphFC[]> {
+    async generateFlashcards(corpus: string, llmRequestTrackingId: string): Promise<HistoricalGraphFC[]> {
 
         const logger = this.execContext.logger;
         const cid = this.execContext.cid;
@@ -94,7 +94,7 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
             FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
         `
 
-        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
+        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json", llmRequestTrackingId);
 
         logger.compute(cid, `LLM response for historical graph generation: ${JSON.stringify(llmResponse)}`);
 
@@ -149,7 +149,7 @@ export class HistoricalGraphGenerator implements FlashcardsGenerator {
             FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
         `
 
-        const llmResponsePart2 = await new LLMAPI(this.execContext, this.authHeader).prompt(promptStep2, "json");
+        const llmResponsePart2 = await new LLMAPI(this.execContext, this.authHeader).prompt(promptStep2, "json", llmRequestTrackingId);
 
         logger.compute(cid, `LLM response for historical graph questions generation: ${JSON.stringify(llmResponsePart2)}`);
 

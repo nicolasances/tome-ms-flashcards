@@ -27,7 +27,7 @@ export class MultipleOptionsFCGenerator implements FlashcardsGenerator {
 
     static generation() {return "o3"}
 
-    async generateFlashcards(corpus: string): Promise<MultipleOptionsFC[]> {
+    async generateFlashcards(corpus: string, llmRequestTrackingId: string): Promise<MultipleOptionsFC[]> {
 
         const prompt = `
             You are an assistant that creates multiple-choice quiz cards from a historical or non-fictional text.
@@ -74,7 +74,7 @@ export class MultipleOptionsFCGenerator implements FlashcardsGenerator {
             FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
         `
 
-        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
+        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json", llmRequestTrackingId);
 
         // For each generated flashcard in promisesResult, generate a MultipleOptionsFC 
         const generatedFlashcards: MultipleOptionsFC[] = llmResponse.value.questions.map(

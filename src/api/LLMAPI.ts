@@ -15,7 +15,7 @@ export class LLMAPI {
         this.authHeader = authHeader;
     }
 
-    async prompt(prompt: string, outputFormat: "json" | "text"): Promise<LLMPromptResponse> {
+    async prompt(prompt: string, outputFormat: "json" | "text", llmRequestTrackingId: string): Promise<LLMPromptResponse> {
 
         return await new Promise<LLMPromptResponse>((resolve, reject) => {
             http({
@@ -28,7 +28,8 @@ export class LLMAPI {
                 },
                 body: JSON.stringify({
                     prompt: prompt,
-                    outputFormat: outputFormat
+                    outputFormat: outputFormat, 
+                    llmRequestTrackingId: llmRequestTrackingId
                 })
             }, (err: any, resp: any, body: any) => {
                 if (err) {

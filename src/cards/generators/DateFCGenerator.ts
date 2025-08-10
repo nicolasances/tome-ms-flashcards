@@ -26,7 +26,7 @@ export class DateFCGenerator implements FlashcardsGenerator {
 
     static generation() {return "d1"}
 
-    async generateFlashcards(corpus: string): Promise<DateFC[]> {
+    async generateFlashcards(corpus: string, llmRequestTrackingId: string): Promise<DateFC[]> {
 
         const prompt = `
             You are an assistant that creates quiz cards from a historical or non-fictional text, to help the user learn the dates of all events in the text.
@@ -62,7 +62,7 @@ export class DateFCGenerator implements FlashcardsGenerator {
             FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
         `
 
-        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
+        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json", llmRequestTrackingId);
 
         // For each generated flashcard in promisesResult, generate a DateFC 
         const generatedFlashcards: DateFC[] = llmResponse.value.questions.map(

@@ -2,6 +2,6 @@ import { Card } from "../Card";
 
 export interface FlashcardsGenerator {
     
-    generateFlashcards(corpus: string): Promise<Card[]>;
+    generateFlashcards(corpus: string, llmRequestTrackingId: string): Promise<Card[]>;
 
 }

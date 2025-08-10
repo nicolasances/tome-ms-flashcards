@@ -8,8 +8,9 @@ import { ValidatorProps } from "toto-api-controller/dist/model/ValidatorProps";
 const secretManagerClient = new SecretManagerServiceClient();
 
 const dbName = 'tomefc';
-const collections = {
+export const collections = {
     cards: 'cards',
+    tracking: 'tracking', // Collection that allows me to track what the LLM has generated
 };
 
 export class ControllerConfig implements TotoControllerConfig {

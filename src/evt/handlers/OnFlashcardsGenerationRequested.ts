@@ -9,6 +9,9 @@ import { FlashcardsCreatedEvent } from "../model/FlashcardsCreatedEvent";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 import { Storage } from "@google-cloud/storage";
+import { TrackingStore } from "../../store/TrackingStore";
+import { FCGenerationLogEntry } from "../../model/TrackingEvent";
+import { generateTrackingId } from "../../util/TrackingId";
 
 export class OnFlashcardsGenerationRequested {
 
@@ -38,41 +41,48 @@ export class OnFlashcardsGenerationRequested {
 
         this.execContext.cid = cid;
 
-        logger.compute(cid, `[OnFlashcardsGenerationRequested] Generating flashcards for topic ${topicCode} - ${sectionCode} of type ${flashcardsType}. User: ${user}`)
-
-        // 1. Find the right generator 
-        const generator = FlashcardsGeneratorFactory.getGenerator(this.execContext, req, msg.data.user, topicCode, topicId, sectionCode, flashcardsType)
-
-        // 2. Read the corpus from GCS
-        // 2.1. Get the bucket
-        const storage = new Storage();
-        const bucket = storage.bucket(this.bucketName);
-
-        // 2.2 Get the specific file corresponding to this topic and section
-        const fileName = `${this.kbBaseFolder}/${topicCode}/${sectionCode}.txt`;
-        const file = bucket.file(fileName);
-
-        // 2.3 Read the file content
-        const [fileContent] = await file.download();
-        const corpus = fileContent.toString('utf-8');
-
-        logger.compute(cid, `Read corpus for topic ${topicCode} - ${sectionCode} from GCS`);
-
-        // 3. Generate flashcards
-        const flashcards = await generator.generateFlashcards(corpus);
-
-        logger.compute(cid, `Generated ${flashcards.length} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
-
-        if (!flashcards || flashcards.length === 0) return { consumed: true, message: "No flashcards generated" };
-
         // 4. Save the flashcards
         let client;
         try {
-
-            // 3. Save all the generated flashcards
             client = await this.config.getMongoClient();
             const db = client.db(this.config.getDBName());
 
+            const tracker = new TrackingStore(db, this.execContext);
+
+            logger.compute(cid, `[OnFlashcardsGenerationRequested] Generating flashcards for topic ${topicCode} - ${sectionCode} of type ${flashcardsType}. User: ${user}`)
+
+            // 1. Find the right generator 
+            const generator = FlashcardsGeneratorFactory.getGenerator(this.execContext, req, msg.data.user, topicCode, topicId, sectionCode, flashcardsType)
+
+            // 2. Read the corpus from GCS
+            // 2.1. Get the bucket
+            const storage = new Storage();
+            const bucket = storage.bucket(this.bucketName);
+
+            // 2.2 Get the specific file corresponding to this topic and section
+            const fileName = `${this.kbBaseFolder}/${topicCode}/${sectionCode}.txt`;
+            const file = bucket.file(fileName);
+
+            // 2.3 Read the file content
+            const [fileContent] = await file.download();
+            const corpus = fileContent.toString('utf-8');
+
+            logger.compute(cid, `Read corpus for topic ${topicCode} - ${sectionCode} from GCS`);
+
+            // 3. Generate flashcards
+            const llmRequestTrackingId = generateTrackingId();
+
+            await tracker.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, flashcardsType, "llmRequestSent", cid, llmRequestTrackingId));
+
+            const flashcards = await generator.generateFlashcards(corpus, llmRequestTrackingId);
+
+            await tracker.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, flashcardsType, "llmResponded", cid, llmRequestTrackingId));
+
+            logger.compute(cid, `Generated ${flashcards.length} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
+
+            if (!flashcards || flashcards.length === 0) return { consumed: true, message: "No flashcards generated" };
+
+            // 3. Save all the generated flashcards
             const fcStore = new FlashCardsStore(db, this.execContext);
 
             const deletedCount = await fcStore.deleteAllSectionFlashcards(topicId, sectionCode, user, flashcardsType);
@@ -80,6 +90,8 @@ export class OnFlashcardsGenerationRequested {
             logger.compute(cid, `Deleted ${deletedCount} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType} before saving new ones`)
 
             const insertedCount = await fcStore.saveFlashCards(flashcards);
+
+            await tracker.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, flashcardsType, "fcSaved", cid, llmRequestTrackingId));
 
             logger.compute(cid, `Persisted ${insertedCount} flashcards for topic ${topicCode} - ${sectionCode} - Flashcards type ${flashcardsType}`);
 
@@ -91,6 +103,8 @@ export class OnFlashcardsGenerationRequested {
                 flashcardsType,
                 flashcards.length,
             ))
+
+            await tracker.trackEvent(new FCGenerationLogEntry(topicId, topicCode, sectionCode!, flashcardsType, "fcCreatedEventSent", cid, generateTrackingId()));
 
         } catch (error) {
 

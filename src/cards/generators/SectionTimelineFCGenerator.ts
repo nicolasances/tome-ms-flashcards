@@ -26,7 +26,7 @@ export class SectionTimelineFCGenerator implements FlashcardsGenerator {
 
     static generation() {return "t6"}
 
-    async generateFlashcards(corpus: string): Promise<SectionTimelineFC[]> {
+    async generateFlashcards(corpus: string, llmRequestTrackingId: string): Promise<SectionTimelineFC[]> {
 
         const prompt = `
             You are an assistant that creates quiz cards from a historical or non-fictional text.
@@ -74,9 +74,9 @@ export class SectionTimelineFCGenerator implements FlashcardsGenerator {
             FORMAT THE OUTPUT IN JSON. DO NOT ADD OTHER TEXT. 
         `
 
-        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json");
+        const llmResponse = await new LLMAPI(this.execContext, this.authHeader).prompt(prompt, "json", llmRequestTrackingId);
 
-        // If there is no timelien to generate
+        // If there is no timeline to generate
         if (llmResponse.value == null) return [];
 
         const card = new SectionTimelineFC(this.user, this.topicId, this.topicCode, this.sectionCode, this.sectionIndex, llmResponse.value.events, llmResponse.value.title, llmResponse.value.shortTitle);
