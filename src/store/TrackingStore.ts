@@ -1,7 +1,6 @@
 import { Db } from "mongodb";
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
 import { collections, ControllerConfig } from "../Config";
-import { Card, FlashcardFactory } from "../cards/Card";
 import { FCGenerationLogEntry } from "../model/TrackingEvent";
 
 export class TrackingStore {
@@ -45,3 +44,4 @@ export class TrackingStore {
         return result.deletedCount;
     }
 
+}
