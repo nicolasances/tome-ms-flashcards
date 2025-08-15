@@ -22,12 +22,12 @@ export class GraphQuestionsBuilder implements LLMPrompt<GraphQuestion[]> {
             - For each event in the graph, generate a question on the event, with multiple choice answers. Follow these rules: 
                 1. If the event is a consequence of a previous event, ask what happened as a consequence of the previous event.
                 2. If the event is not a consequence of a previous event, ask what happened in the event.
-                1. Avoid questions on dates and names
-                2. Max 4 answers, only one is correct
-                3. Don't use "all of the above" or "none of the above" as an answer
+                3. Max 4 answers, only one is correct
+                4. Don't use "all of the above" or "none of the above" as an answer
+                5. IMPORTANT: DO NOT ASK QUESTIONS ABOUT A DATE (year, century, or any date) 
+                6. IMPORTANT: THE QUESTION SHOULD NOT CONTAIN DATES NOR CENTURIES. DO NOT ASK ABOUT DATES OR CENTURIES.
 
             **Constraints:**
-            - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
             - Do not translate centuries into a date. E.g. "starts in the 10th century" should not be translated into "900".
             - Do not make up events or facts that are not in the text.
             - STRICTLY restrict yourself to the text and graph provided.

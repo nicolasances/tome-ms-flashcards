@@ -34,7 +34,7 @@ export class GraphBuilderPrompt implements LLMPrompt<HistoricalGraphFC | null> {
             - Extract all historical events and sort them by **chronological** or **causal** order. 
             - Track whether the link between two events is causal or purely chronological.
             - Separately extract all facts (i.e. interesting facts, concepts, things that are not events) from the text. 
-            - Events should be well described, but not too long. Aim for 1-3 sentences per event.
+            - Events should be well described, but not too long. Aim for 1-3 sentences per event. AVOID putting dates in the description of the event.
             - In the event description, use the following markup: 
                 - Wrap name of people in a tag <name>...</name>
                 - Wrap names of places in a tag <place>...</place>
@@ -42,6 +42,7 @@ export class GraphBuilderPrompt implements LLMPrompt<HistoricalGraphFC | null> {
 
             **Constraints:**
             - Do not make up dates if they are not in the text. Dates must be EXPLICITLY WRITTEN in the text. 
+            - DO NOT INCLUDE CENTURIES - CENTURIES ARE NOT DATES
             - The Event description should not contain dates. 
             - Do not translate centuries into a date. E.g. "starts in the 10th century" should not be translated into "900".
             - Do not make up events or facts that are not in the text.
