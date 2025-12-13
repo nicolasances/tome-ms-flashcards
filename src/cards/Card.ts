@@ -1,11 +1,18 @@
 import { Request } from "express";
-import { MultipleOptionsFC } from "./MultipleOptionsFC";
+import { MultipleOptionsFC } from "./model/MultipleOptionsFC";
+import { SectionTimelineFC } from "./model/SectionTimelineFC";
+import { DateFC } from "./model/DateFC";
+import { HistoricalGraphFC } from "./model/HistoricalGraphFC";
 
 export interface Card {
 
     id?: string
-    topicCode: string;
     type: string;
+    topicId: string
+    topicCode: string;
+    sectionCode: string;
+    sectionIndex: number;   // 0-based index of the section in the topic to manage proper ordering
+    
     user: string;
 
     toBSON(): any;
@@ -14,9 +21,10 @@ export interface Card {
 
 export class FlashcardFactory {
 
-    static newFlashcardFromRequest(type: 'options' | 'gap', request: Request, user: string): Card {
+    static newFlashcardFromRequest(type: 'options' | 'timeline', request: Request, user: string): Card {
 
-        if (type == 'options') return MultipleOptionsFC.fromRequest(request, user)
+        if (type == 'options') return MultipleOptionsFC.fromRequest(request, user);
+        else if (type == 'timeline') return SectionTimelineFC.fromRequest(request, user);
 
         throw new Error(`Card with type ${type} are not supported`)
 
@@ -25,6 +33,9 @@ export class FlashcardFactory {
     static newFlashcardFromBson(bson: any) {
 
         if (bson.type == 'options') return MultipleOptionsFC.fromBSON(bson);
+        else if (bson.type == 'timeline') return SectionTimelineFC.fromBSON(bson);
+        else if (bson.type == 'date') return DateFC.fromBSON(bson);
+        else if (bson.type == 'graph') return HistoricalGraphFC.fromBSON(bson);
 
         throw new Error(`Card with type ${bson.type} are not supported`)
     }

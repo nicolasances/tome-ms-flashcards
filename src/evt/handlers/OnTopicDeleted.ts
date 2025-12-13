@@ -1,5 +1,5 @@
 import { ExecutionContext } from "toto-api-controller/dist/model/ExecutionContext";
-import { FlashcardsGenerator } from "../../cards/FlashcardsGenerator";
+import { FlashcardsGenerationOrchestrator } from "../../cards/FlashcardsGenerationOrchestrator";
 import { Request } from "express";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 import { FlashCardsStore } from "../../store/FlashCardsStore";

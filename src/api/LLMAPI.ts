@@ -15,7 +15,7 @@ export class LLMAPI {
         this.authHeader = authHeader;
     }
 
-    async prompt(prompt: string, outputFormat: "json" | "text"): Promise<LLMPromptResponse> {
+    async prompt(prompt: string, outputFormat: "json" | "text", llmRequestTrackingId: string): Promise<LLMPromptResponse> {
 
         return await new Promise<LLMPromptResponse>((resolve, reject) => {
             http({
@@ -28,7 +28,8 @@ export class LLMAPI {
                 },
                 body: JSON.stringify({
                     prompt: prompt,
-                    outputFormat: outputFormat
+                    outputFormat: outputFormat, 
+                    llmRequestTrackingId: llmRequestTrackingId
                 })
             }, (err: any, resp: any, body: any) => {
                 if (err) {
@@ -46,4 +47,6 @@ export interface LLMPromptResponse {
 
     format: "json" | "text";
     value: any;
+    llmName: string; // The name of the LLM that generated this response
+    llmProvider: string; // The provider of the LLM that generated this response, e.g. "aws", "gcp", etc.
 }

@@ -34,7 +34,7 @@ export class GetFlashcards implements TotoDelegate {
             // Save the flashcard
             const cards = await new FlashCardsStore(db, execContext).getFlashcards(String(topicId));
 
-            return { flashcards: cards }
+            return { count: cards.length, flashcards: cards }
 
 
         } catch (error) {

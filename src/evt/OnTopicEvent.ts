@@ -7,7 +7,7 @@ import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 import { TotoRuntimeError } from "toto-api-controller/dist/model/TotoRuntimeError";
 import { FlashcardFactory } from "../cards/Card";
 import { FlashCardsStore } from "../store/FlashCardsStore";
-import { FlashcardsGenerator } from "../cards/FlashcardsGenerator";
+import { FlashcardsGenerationOrchestrator } from "../cards/FlashcardsGenerationOrchestrator";
 import { OnTopicScraped } from "./handlers/OnTopicScraped";
 import { OnTopicDeleted } from "./handlers/OnTopicDeleted";
 

@@ -1,5 +1,5 @@
 import { WithId } from "mongodb";
-import { Card } from "./Card";
+import { Card } from "../Card";
 import { Request } from "express";
 import { ValidationError } from "toto-api-controller/dist/validation/Validator";
 
@@ -16,30 +16,39 @@ export class MultipleOptionsFC implements Card {
     user: string
     topicId: string
     topicCode: string;
+    sectionCode: string;
+    sectionIndex: number;   // 0-based index of the section in the topic to manage proper ordering
     question: string;
     options: string[];
     rightAnswerIndex: number;
 
     sectionTitle?: string; 
+    sectionShortTitle: string;
 
     constructor(
         user: string,
         topicId: string,
         topicCode: string,
+        sectionCode: string,
+        sectionIndex: number,
         question: string,
         options: string[],
-        rightAnswerIndex: number
+        rightAnswerIndex: number, 
+        sectionShortTitle: string
     ) {
         this.user = user;
         this.topicId = topicId;
         this.topicCode = topicCode;
+        this.sectionCode = sectionCode;
+        this.sectionIndex = sectionIndex;
         this.question = question;
         this.options = options;
         this.rightAnswerIndex = rightAnswerIndex;
+        this.sectionShortTitle = sectionShortTitle;
     }
 
     toBSON() {
-        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex, sectionTitle: this.sectionTitle }
+        return { user: this.user, type: this.type, topicId: this.topicId, topicCode: this.topicCode, sectionCode: this.sectionCode, sectionIndex: this.sectionIndex, question: this.question, options: this.options, rightAnswerIndex: this.rightAnswerIndex, sectionShortTitle: this.sectionShortTitle }
     }
 
     /**
@@ -72,18 +81,21 @@ export class MultipleOptionsFC implements Card {
 
         // Validate mandatory fields
         if (!body.topicCode) throw new ValidationError(400, "No topic code provided");
+        if (!body.sectionCode) throw new ValidationError(400, "No section code provided");
         if (!body.topicId) throw new ValidationError(400, "No topic id provided");
         if (!body.question) throw new ValidationError(400, "No question provided");
         if (!body.options || body.options.length < 2) throw new ValidationError(400, "No (or not enough) options provided");
         if (!body.rightAnswerIndex) throw new ValidationError(400, "No right answer provided");
+        if (!body.sectionShortTitle) throw new ValidationError(400, "No section short title provided");
+        if (body.sectionIndex === undefined) throw new ValidationError(400, "No section index provided");
 
-        return new MultipleOptionsFC(user, body.topicId, body.topicCode, body.question, body.options, body.rightAnswerIndex)
+        return new MultipleOptionsFC(user, body.topicId, body.topicCode, body.sectionCode, body.sectionIndex, body.question, body.options, body.rightAnswerIndex, body.sectionShortTitle)
 
     }
 
     static fromBSON(bson: WithId<any>): MultipleOptionsFC {
 
-        const card = new MultipleOptionsFC(bson.user, bson.topicId, bson.topicCode, bson.question, bson.options, bson.rightAnswerIndex)
+        const card = new MultipleOptionsFC(bson.user, bson.topicId, bson.topicCode, bson.sectionCode, bson.sectionIndex, bson.question, bson.options, bson.rightAnswerIndex, bson.sectionShortTitle)
         card.id = bson._id.toHexString()
         card.sectionTitle = bson.sectionTitle;
 
